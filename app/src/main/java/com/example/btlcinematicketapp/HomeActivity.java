@@ -1,5 +1,6 @@
 package com.example.btlcinematicketapp;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -9,6 +10,7 @@ import com.example.btlcinematicketapp.fragment.CinemaFragment;
 import com.example.btlcinematicketapp.fragment.FoodMenuFragment;
 import com.example.btlcinematicketapp.fragment.HomeFragment;
 import com.example.btlcinematicketapp.fragment.PlaceholderFragment;
+import com.example.btlcinematicketapp.util.Session;
 import com.example.btlcinematicketapp.util.UiUtil;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -16,6 +18,13 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+        if (Session.getUserId(this) < 0) {
+            startActivity(new Intent(this, LoginActivity.class));
+            finish();
+            return;
+        }
+        
         setContentView(R.layout.activity_home);
         UiUtil.applyInsets(findViewById(R.id.root));
 
@@ -29,8 +38,6 @@ public class HomeActivity extends AppCompatActivity {
                 selectedFragment = new CinemaFragment();
             } else if (id == R.id.nav_food) {
                 selectedFragment = new FoodMenuFragment();
-            } else if (id == R.id.nav_group) {
-                selectedFragment = PlaceholderFragment.newInstance("Nhóm phim");
             } else if (id == R.id.nav_profile) {
                 selectedFragment = PlaceholderFragment.newInstance("Tôi");
             }

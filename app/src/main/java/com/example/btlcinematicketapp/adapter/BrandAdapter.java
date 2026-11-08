@@ -39,6 +39,16 @@ public class BrandAdapter extends RecyclerView.Adapter<BrandAdapter.ViewHolder> 
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         String brand = brands.get(position);
         holder.tvBrandName.setText(brand);
+
+        // Load logo
+        String logoName = "logo_" + brand.toLowerCase();
+        int resId = holder.itemView.getContext().getResources().getIdentifier(
+                logoName, "drawable", holder.itemView.getContext().getPackageName());
+        if (resId != 0) {
+            holder.ivLogo.setImageResource(resId);
+        } else {
+            holder.ivLogo.setImageResource(android.R.drawable.ic_menu_gallery); // Placeholder
+        }
         
         // Cập nhật màu sắc cho text và viền logo dựa vào trạng thái chọn
         if (position == selectedPosition) {

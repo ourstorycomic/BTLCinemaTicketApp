@@ -40,6 +40,16 @@ public class CinemaAdapter extends RecyclerView.Adapter<CinemaAdapter.ViewHolder
         holder.tvCinemaLocation.setText(cinema.location);
         holder.tvCinemaAddress.setText(cinema.address);
 
+        // Load logo
+        String logoName = "logo_" + cinema.brand.toLowerCase();
+        int resId = holder.itemView.getContext().getResources().getIdentifier(
+                logoName, "drawable", holder.itemView.getContext().getPackageName());
+        if (resId != 0) {
+            holder.ivLogo.setImageResource(resId);
+        } else {
+            holder.ivLogo.setImageResource(R.drawable.ic_location); // Placeholder
+        }
+
         holder.itemView.setOnClickListener(v -> listener.onItemClick(cinema));
     }
 
@@ -50,12 +60,14 @@ public class CinemaAdapter extends RecyclerView.Adapter<CinemaAdapter.ViewHolder
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         TextView tvCinemaName, tvCinemaLocation, tvCinemaAddress;
+        android.widget.ImageView ivLogo;
 
         ViewHolder(View view) {
             super(view);
             tvCinemaName = view.findViewById(R.id.tvCinemaName);
             tvCinemaLocation = view.findViewById(R.id.tvCinemaLocation);
             tvCinemaAddress = view.findViewById(R.id.tvCinemaAddress);
+            ivLogo = view.findViewById(R.id.ivLogo);
         }
     }
 }

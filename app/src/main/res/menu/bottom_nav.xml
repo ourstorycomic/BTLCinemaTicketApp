@@ -2,6 +2,5 @@
     <item android:id="@+id/nav_home" android:icon="@drawable/ic_nav_movie" android:title="Chọn phim"/>
     <item android:id="@+id/nav_cinema" android:icon="@drawable/ic_nav_cinema" android:title="Chọn rạp"/>
     <item android:id="@+id/nav_food" android:icon="@drawable/ic_nav_food" android:title="Bắp nước"/>
-    <item android:id="@+id/nav_group" android:icon="@drawable/ic_nav_group" android:title="Nhóm phim"/>
     <item android:id="@+id/nav_profile" android:icon="@drawable/ic_nav_profile" android:title="Tôi"/>
 </menu>
