@@ -23,10 +23,6 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (Session.getUserId(this) > 0) {
-            openMain();
-            return;
-        }
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_login);
         UiUtil.applyInsets(findViewById(R.id.root));
