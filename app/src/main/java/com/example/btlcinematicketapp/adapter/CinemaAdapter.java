@@ -3,6 +3,7 @@ package com.example.btlcinematicketapp.adapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -10,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.btlcinematicketapp.R;
 import com.example.btlcinematicketapp.model.Models.Cinema;
+import com.example.btlcinematicketapp.util.UiUtil;
 
 import java.util.List;
 
@@ -40,6 +42,10 @@ public class CinemaAdapter extends RecyclerView.Adapter<CinemaAdapter.ViewHolder
         holder.tvCinemaLocation.setText(cinema.location);
         holder.tvCinemaAddress.setText(cinema.address);
 
+        if (holder.ivLogo != null) {
+            holder.ivLogo.setImageResource(UiUtil.getCinemaLogoRes(holder.itemView.getContext(), cinema.brand));
+        }
+
         holder.itemView.setOnClickListener(v -> listener.onItemClick(cinema));
     }
 
@@ -49,10 +55,12 @@ public class CinemaAdapter extends RecyclerView.Adapter<CinemaAdapter.ViewHolder
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
+        ImageView ivLogo;
         TextView tvCinemaName, tvCinemaLocation, tvCinemaAddress;
 
         ViewHolder(View view) {
             super(view);
+            ivLogo = view.findViewById(R.id.ivLogo);
             tvCinemaName = view.findViewById(R.id.tvCinemaName);
             tvCinemaLocation = view.findViewById(R.id.tvCinemaLocation);
             tvCinemaAddress = view.findViewById(R.id.tvCinemaAddress);

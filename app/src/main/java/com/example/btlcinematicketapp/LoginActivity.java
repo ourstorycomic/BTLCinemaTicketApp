@@ -3,7 +3,6 @@ package com.example.btlcinematicketapp;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -18,8 +17,7 @@ import com.example.btlcinematicketapp.util.UiUtil;
 public class LoginActivity extends AppCompatActivity {
     private boolean registerMode = false;
     private EditText etFullname, etPhone, etUsername, etPassword;
-    private Button btnSubmit;
-    private TextView tvToggle;
+    private TextView btnSubmit, tvToggle, tvBrandTitle, tvSubTitle;
     private DatabaseHelper db;
 
     @Override
@@ -40,6 +38,8 @@ public class LoginActivity extends AppCompatActivity {
         etPassword = findViewById(R.id.etPassword);
         btnSubmit = findViewById(R.id.btnSubmit);
         tvToggle = findViewById(R.id.tvToggle);
+        tvBrandTitle = findViewById(R.id.tvBrandTitle);
+        tvSubTitle = findViewById(R.id.tvSubTitle);
 
         tvToggle.setOnClickListener(v -> {
             registerMode = !registerMode;
@@ -53,8 +53,16 @@ public class LoginActivity extends AppCompatActivity {
         int vis = registerMode ? View.VISIBLE : View.GONE;
         etFullname.setVisibility(vis);
         etPhone.setVisibility(vis);
-        btnSubmit.setText(registerMode ? "Đăng ký" : "Đăng nhập");
-        tvToggle.setText(registerMode ? "Đã có tài khoản? Đăng nhập" : "Chưa có tài khoản? Đăng ký");
+        btnSubmit.setText(registerMode ? "Tạo tài khoản" : "Đăng nhập");
+        tvToggle.setText(registerMode ? "Đã có tài khoản? Đăng nhập ngay" : "Chưa có tài khoản? Đăng ký ngay");
+
+        if (registerMode) {
+            tvBrandTitle.setText("Đăng Ký");
+            tvSubTitle.setText("Tạo tài khoản mới để nhận nhiều ưu đãi vé phim");
+        } else {
+            tvBrandTitle.setText("CineBox");
+            tvSubTitle.setText("Đăng nhập để bắt đầu trải nghiệm đặt vé");
+        }
     }
 
     private void submit() {

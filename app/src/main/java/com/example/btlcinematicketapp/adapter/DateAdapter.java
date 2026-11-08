@@ -1,7 +1,6 @@
 package com.example.btlcinematicketapp.adapter;
 
 import android.graphics.Color;
-import android.graphics.drawable.GradientDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,6 +30,14 @@ public class DateAdapter extends RecyclerView.Adapter<DateAdapter.ViewHolder> {
         this.listener = listener;
     }
 
+    public void setSelectedPosition(int position) {
+        if (position < 0 || position >= dates.size()) return;
+        int oldPos = selectedPosition;
+        selectedPosition = position;
+        notifyItemChanged(oldPos);
+        notifyItemChanged(selectedPosition);
+    }
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -43,14 +50,13 @@ public class DateAdapter extends RecyclerView.Adapter<DateAdapter.ViewHolder> {
         holder.tvDate.setText(dates.get(position));
         holder.tvDayOfWeek.setText(daysOfWeek.get(position));
 
-        GradientDrawable bg = (GradientDrawable) holder.llDateContainer.getBackground();
         if (position == selectedPosition) {
-            bg.setStroke(3, Color.parseColor("#D81B60"));
-            holder.tvDate.setTextColor(Color.parseColor("#D81B60"));
-            holder.tvDayOfWeek.setBackgroundColor(Color.parseColor("#D81B60"));
+            holder.llDateContainer.setBackgroundResource(R.drawable.bg_date_item_selected);
+            holder.tvDate.setTextColor(Color.parseColor("#E50914"));
+            holder.tvDayOfWeek.setBackgroundColor(Color.parseColor("#E50914"));
             holder.tvDayOfWeek.setTextColor(Color.WHITE);
         } else {
-            bg.setStroke(1, Color.parseColor("#DDDDDD"));
+            holder.llDateContainer.setBackgroundResource(R.drawable.bg_date_item_normal);
             holder.tvDate.setTextColor(Color.parseColor("#333333"));
             holder.tvDayOfWeek.setBackgroundColor(Color.parseColor("#F0F0F0"));
             holder.tvDayOfWeek.setTextColor(Color.parseColor("#555555"));

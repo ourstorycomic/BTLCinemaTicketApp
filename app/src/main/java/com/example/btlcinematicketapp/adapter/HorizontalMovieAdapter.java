@@ -37,13 +37,16 @@ public class HorizontalMovieAdapter extends RecyclerView.Adapter<HorizontalMovie
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Movie movie = movies.get(position);
-        
-        String rating = movie.ageRating.replace("T", "");
-        if (rating.equals("P")) rating = "ALL";
-        holder.tvAgeRating.setText(rating + "+");
-        
+
+        String ratingStr = movie.ageRating.replace("T", "");
+        if (ratingStr.equals("P")) ratingStr = "ALL";
+        holder.tvAgeRating.setText(ratingStr + "+");
+
         holder.tvTitle.setText(movie.title);
-        
+        if (holder.tvRating != null) {
+            holder.tvRating.setText(String.format(java.util.Locale.US, "%.1f", movie.rating));
+        }
+
         int resId = holder.itemView.getContext().getResources().getIdentifier(
                 movie.posterName, "drawable", holder.itemView.getContext().getPackageName());
         if (resId != 0) {
@@ -53,6 +56,9 @@ public class HorizontalMovieAdapter extends RecyclerView.Adapter<HorizontalMovie
         }
 
         holder.itemView.setOnClickListener(v -> listener.onItemClick(movie));
+        if (holder.btnBook != null) {
+            holder.btnBook.setOnClickListener(v -> listener.onItemClick(movie));
+        }
     }
 
     @Override
@@ -62,13 +68,15 @@ public class HorizontalMovieAdapter extends RecyclerView.Adapter<HorizontalMovie
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView ivPoster;
-        TextView tvAgeRating, tvTitle;
+        TextView tvAgeRating, tvTitle, tvRating, btnBook;
 
         ViewHolder(View view) {
             super(view);
             ivPoster = view.findViewById(R.id.ivPoster);
             tvAgeRating = view.findViewById(R.id.tvAgeRating);
             tvTitle = view.findViewById(R.id.tvTitle);
+            tvRating = view.findViewById(R.id.tvRating);
+            btnBook = view.findViewById(R.id.btnBook);
         }
     }
 }

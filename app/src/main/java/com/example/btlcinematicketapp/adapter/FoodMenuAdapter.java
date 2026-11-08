@@ -1,19 +1,20 @@
 package com.example.btlcinematicketapp.adapter;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.btlcinematicketapp.R;
 import com.example.btlcinematicketapp.model.Models.FoodItem;
+import com.example.btlcinematicketapp.util.TimeUtil;
 
-import java.text.NumberFormat;
 import java.util.List;
-import java.util.Locale;
 
 public class FoodMenuAdapter extends RecyclerView.Adapter<FoodMenuAdapter.ViewHolder> {
     private final List<FoodItem> foods;
@@ -35,9 +36,37 @@ public class FoodMenuAdapter extends RecyclerView.Adapter<FoodMenuAdapter.ViewHo
         holder.tvEmoji.setText(food.emoji);
         holder.tvFoodName.setText(food.name);
         holder.tvFoodDesc.setText(food.description);
-        
-        String priceFormatted = NumberFormat.getNumberInstance(Locale.US).format(food.price) + " đ";
-        holder.tvFoodPrice.setText(priceFormatted);
+        holder.tvFoodPrice.setText(TimeUtil.money(food.price));
+
+        holder.itemView.setOnClickListener(v -> showFoodDetailDialog(v.getContext(), food));
+    }
+
+    private void showFoodDetailDialog(Context context, FoodItem food) {
+        View view = LayoutInflater.from(context).inflate(R.layout.dialog_food_detail, null);
+
+        TextView tvEmoji = view.findViewById(R.id.tvDetailEmoji);
+        TextView tvName = view.findViewById(R.id.tvDetailName);
+        TextView tvCategory = view.findViewById(R.id.tvDetailCategory);
+        TextView tvDesc = view.findViewById(R.id.tvDetailDesc);
+        TextView tvPrice = view.findViewById(R.id.tvDetailPrice);
+        TextView btnClose = view.findViewById(R.id.btnDetailClose);
+
+        tvEmoji.setText(food.emoji != null ? food.emoji : "🍿");
+        tvName.setText(food.name);
+        tvCategory.setText(food.category != null ? food.category : "Món ăn / Combo");
+        tvDesc.setText(food.description != null ? food.description : "Khẩu phần thơm ngon phục vụ khi xem phim.");
+        tvPrice.setText(TimeUtil.money(food.price));
+
+        AlertDialog dialog = new AlertDialog.Builder(context)
+                .setView(view)
+                .create();
+
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        }
+
+        btnClose.setOnClickListener(v -> dialog.dismiss());
+        dialog.show();
     }
 
     @Override

@@ -1,11 +1,13 @@
 package com.example.btlcinematicketapp.adapter;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.btlcinematicketapp.R;
@@ -72,6 +74,8 @@ public class FoodAdapter extends RecyclerView.Adapter<FoodAdapter.VH> {
         h.price.setText(TimeUtil.money(f.price));
         h.qty.setText(String.valueOf(qty[position]));
 
+        h.itemView.setOnClickListener(v -> showFoodDetailDialog(v.getContext(), f));
+
         h.plus.setOnClickListener(v -> {
             int p = h.getBindingAdapterPosition();
             if (p == RecyclerView.NO_POSITION || qty[p] >= 10) return;
@@ -86,6 +90,34 @@ public class FoodAdapter extends RecyclerView.Adapter<FoodAdapter.VH> {
             h.qty.setText(String.valueOf(qty[p]));
             listener.onChange();
         });
+    }
+
+    private void showFoodDetailDialog(Context context, FoodItem food) {
+        View view = LayoutInflater.from(context).inflate(R.layout.dialog_food_detail, null);
+
+        TextView tvEmoji = view.findViewById(R.id.tvDetailEmoji);
+        TextView tvName = view.findViewById(R.id.tvDetailName);
+        TextView tvCategory = view.findViewById(R.id.tvDetailCategory);
+        TextView tvDesc = view.findViewById(R.id.tvDetailDesc);
+        TextView tvPrice = view.findViewById(R.id.tvDetailPrice);
+        TextView btnClose = view.findViewById(R.id.btnDetailClose);
+
+        tvEmoji.setText(food.emoji != null ? food.emoji : "🍿");
+        tvName.setText(food.name);
+        tvCategory.setText(food.category != null ? food.category : "Món ăn / Combo");
+        tvDesc.setText(food.description != null ? food.description : "Khẩu phần thơm ngon phục vụ khi xem phim.");
+        tvPrice.setText(TimeUtil.money(food.price));
+
+        AlertDialog dialog = new AlertDialog.Builder(context)
+                .setView(view)
+                .create();
+
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        }
+
+        btnClose.setOnClickListener(v -> dialog.dismiss());
+        dialog.show();
     }
 
     @Override

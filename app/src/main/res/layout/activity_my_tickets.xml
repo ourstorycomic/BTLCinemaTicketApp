@@ -1,18 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/bg_light"
     android:orientation="vertical"
     android:padding="12dp">
 
-    <TextView
+    <!-- Header Bar -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="4dp"
-        android:text="Vé của tôi"
-        android:textSize="22sp"
-        android:textStyle="bold" />
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="4dp">
+
+        <ImageView
+            android:id="@+id/ivBack"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_marginEnd="12dp"
+            android:src="@drawable/ic_arrow_back"
+            app:tint="@color/black" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Vé của tôi"
+            android:textColor="@color/text_main"
+            android:textSize="22sp"
+            android:textStyle="bold" />
+    </LinearLayout>
 
     <TextView
         android:id="@+id/tvEmpty"
@@ -20,10 +39,15 @@
         android:layout_height="wrap_content"
         android:padding="16dp"
         android:text="Bạn chưa đặt vé nào."
+        android:textColor="@color/text_sub"
+        android:textSize="15sp"
         android:visibility="gone" />
 
-    <ListView
-        android:id="@+id/lvTickets"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvTicketCards"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_marginTop="8dp"
+        android:clipToPadding="false"
+        android:paddingBottom="16dp" />
 </LinearLayout>

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -11,12 +12,27 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <TextView
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Xác nhận đơn hàng"
-            android:textSize="22sp"
-            android:textStyle="bold" />
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/ivBack"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_marginEnd="12dp"
+                android:src="@drawable/ic_arrow_back"
+                app:tint="@color/black" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Xác nhận đơn hàng"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/tvMovie"
@@ -44,6 +60,55 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp" />
+
+        <!-- Voucher Discount Section -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Mã giảm giá &amp; Ưu đãi"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/etVoucher"
+                android:layout_width="0dp"
+                android:layout_height="44dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_search_input"
+                android:hint="Nhập mã voucher (vd: WED50K, COUPLE20)"
+                android:paddingHorizontal="12dp"
+                android:textSize="13sp" />
+
+            <TextView
+                android:id="@+id/btnApplyVoucher"
+                android:layout_width="wrap_content"
+                android:layout_height="44dp"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/bg_btn_book"
+                android:gravity="center"
+                android:paddingHorizontal="16dp"
+                android:text="Áp dụng"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvVoucherInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textColor="@color/cinema_red"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/tvBreakdown"
@@ -76,13 +141,25 @@
                 android:id="@+id/rbBank"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Chuyển khoản ngân hàng" />
+                android:text="Chuyển khoản ngân hàng (VietQR)" />
 
             <RadioButton
-                android:id="@+id/rbWallet"
+                android:id="@+id/rbMomo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Ví điện tử" />
+                android:text="Ví điện tử MoMo" />
+
+            <RadioButton
+                android:id="@+id/rbZaloPay"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Ví điện tử ZaloPay" />
+
+            <RadioButton
+                android:id="@+id/rbVNPay"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Ví điện tử VNPay / Viettel Money" />
         </RadioGroup>
 
         <TextView

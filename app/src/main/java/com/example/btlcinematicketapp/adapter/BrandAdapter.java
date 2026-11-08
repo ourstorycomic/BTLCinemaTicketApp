@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.btlcinematicketapp.R;
+import com.example.btlcinematicketapp.util.UiUtil;
 
 import java.util.List;
 
@@ -40,16 +41,18 @@ public class BrandAdapter extends RecyclerView.Adapter<BrandAdapter.ViewHolder> 
         String brand = brands.get(position);
         holder.tvBrandName.setText(brand);
         
-        // Cập nhật màu sắc cho text và viền logo dựa vào trạng thái chọn
+        holder.ivLogo.setImageResource(UiUtil.getCinemaLogoRes(holder.itemView.getContext(), brand));
+        
         if (position == selectedPosition) {
-            holder.tvBrandName.setTextColor(Color.parseColor("#D32F2F"));
-            // Trong thực tế, có thể đổi background drawable thành màu đỏ
+            holder.ivLogo.setBackgroundResource(R.drawable.bg_date_item_selected);
+            holder.tvBrandName.setTextColor(Color.parseColor("#E50914"));
         } else {
-            holder.tvBrandName.setTextColor(Color.parseColor("#333333"));
+            holder.ivLogo.setBackgroundResource(R.drawable.bg_date_item_normal);
+            holder.tvBrandName.setTextColor(Color.parseColor("#555555"));
         }
 
         holder.itemView.setOnClickListener(v -> {
-            int currentPos = holder.getAdapterPosition();
+            int currentPos = holder.getBindingAdapterPosition();
             if (currentPos == RecyclerView.NO_POSITION) return;
             int oldPos = selectedPosition;
             selectedPosition = currentPos;

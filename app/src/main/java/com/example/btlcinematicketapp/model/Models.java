@@ -16,6 +16,10 @@ public class Models {
         public String name;
         public String address;
         public String location;
+        public String phone;
+        public String facilities;     // "4DX, IMAX, Dolby Atmos, Parking, Sweetbox"
+        public String operatingHours; // "08:00 - 23:30"
+        public double rating;         // 4.8
     }
 
     public static class Showtime {
@@ -30,6 +34,24 @@ public class Models {
         public long id;
         public String name, description, category, emoji;
         public int price;
+    }
+
+    public static class Review {
+        public long id, movieId;
+        public String userName;
+        public double rating;
+        public String comment;
+        public String createdAt;
+    }
+
+    public static class Promotion {
+        public long id;
+        public String title;
+        public String description;
+        public String actionText;
+        public String badge;
+        public String bgGradient; // "bg_promo_card1", "bg_promo_card2", etc.
+        public String discountCode;
     }
 
     public static class Ticket {

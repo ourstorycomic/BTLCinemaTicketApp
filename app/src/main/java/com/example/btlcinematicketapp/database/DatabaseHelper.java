@@ -10,6 +10,8 @@ import android.text.TextUtils;
 import com.example.btlcinematicketapp.model.Models.Cinema;
 import com.example.btlcinematicketapp.model.Models.FoodItem;
 import com.example.btlcinematicketapp.model.Models.Movie;
+import com.example.btlcinematicketapp.model.Models.Promotion;
+import com.example.btlcinematicketapp.model.Models.Review;
 import com.example.btlcinematicketapp.model.Models.Showtime;
 import com.example.btlcinematicketapp.model.Models.Ticket;
 
@@ -17,6 +19,7 @@ import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -24,7 +27,7 @@ import java.util.Set;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "CinemaBooking.db";
-    private static final int DATABASE_VERSION = 4;
+    private static final int DATABASE_VERSION = 9;
 
     private static final String MOVIE_COLS =
             "id, title, description, poster_url, duration, genre, director, cast_list, " +
@@ -47,7 +50,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE Users (" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "username TEXT UNIQUE, password TEXT, fullname TEXT, phone TEXT)");
+                "username TEXT UNIQUE, password TEXT, fullname TEXT, email TEXT, phone TEXT)");
 
         db.execSQL("CREATE TABLE Movies (" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -57,7 +60,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         db.execSQL("CREATE TABLE Cinemas (" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "brand TEXT, name TEXT, address TEXT, location TEXT)");
+                "brand TEXT, name TEXT, address TEXT, location TEXT, " +
+                "phone TEXT, facilities TEXT, operating_hours TEXT, rating REAL)");
 
         db.execSQL("CREATE TABLE Showtimes (" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -69,6 +73,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("CREATE TABLE FoodItems (" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "name TEXT, description TEXT, category TEXT, price INTEGER, emoji TEXT)");
+
+        db.execSQL("CREATE TABLE Promotions (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "title TEXT, description TEXT, action_text TEXT, badge TEXT, bg_gradient TEXT, discount_code TEXT)");
+
+        db.execSQL("CREATE TABLE Reviews (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "movie_id INTEGER, user_name TEXT, rating REAL, comment TEXT, created_at TEXT, " +
+                "FOREIGN KEY(movie_id) REFERENCES Movies(id))");
 
         db.execSQL("CREATE TABLE Tickets (" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -91,6 +104,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS TicketFoods");
         db.execSQL("DROP TABLE IF EXISTS Tickets");
+        db.execSQL("DROP TABLE IF EXISTS Reviews");
+        db.execSQL("DROP TABLE IF EXISTS Promotions");
         db.execSQL("DROP TABLE IF EXISTS FoodItems");
         db.execSQL("DROP TABLE IF EXISTS Showtimes");
         db.execSQL("DROP TABLE IF EXISTS Cinemas");
@@ -100,14 +115,25 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     private void seed(SQLiteDatabase db) {
+        // --- SEED DEFAULT USER ---
+        ContentValues defaultUser = new ContentValues();
+        defaultUser.put("id", 1);
+        defaultUser.put("username", "user");
+        defaultUser.put("password", hash("1234"));
+        defaultUser.put("fullname", "Nguyễn Văn A");
+        defaultUser.put("email", "user@cinebox.vn");
+        defaultUser.put("phone", "0901234567");
+        db.insert("Users", null, defaultUser);
+
         // --- CINEMAS ---
         String[][] cinemas = {
-                {"CGV", "CGV Aeon Bình Tân", "Tầng 3, Trung tâm thương mại Aeon Mall Bình Tân...", "Quận Bình Tân"},
-                {"CGV", "CGV Aeon Tân Phú", "Lầu 3, Aeon Mall 30 Bờ Bao Tân Thắng, P. Sơn Kỳ...", "Quận Tân Phú"},
-                {"CGV", "CGV Crescent Mall", "Tầng 5 | Crescent Mall, số 101 đường Tôn Dật Tiên...", "Quận 7"},
-                {"Lotte", "Lotte Cinema Gò Vấp", "Tầng 3 Lotte Mart Gò Vấp, 242 Nguyễn Văn Lượng...", "Quận Gò Vấp"},
-                {"Galaxy", "Galaxy Nguyễn Du", "116 Nguyễn Du, Quận 1...", "Quận 1"},
-                {"Beta", "Beta Cinemas Quang Trung", "645 Quang Trung, P.11, Gò Vấp...", "Quận Gò Vấp"}
+                {"CGV", "CGV Aeon Bình Tân", "Tầng 3, TTTM Aeon Mall Bình Tân, 1 Đường số 17A, P. Bình Trị Đông B", "Quận Bình Tân, TP. Hồ Chí Minh", "1900 6017", "4DX, IMAX, Dolby Atmos, Sweetbox, Parking", "08:00 - 23:30", "4.8"},
+                {"CGV", "CGV Crescent Mall", "Tầng 5, Crescent Mall, 101 Tôn Dật Tiên, P. Tân Phú", "Quận 7, TP. Hồ Chí Minh", "1900 6017", "IMAX, Gold Class, Sweetbox, Parking", "08:00 - 23:30", "4.9"},
+                {"CGV", "CGV Vincom Bà Triệu", "Tầng 6, Vincom Center, 191 Bà Triệu, Q. Hai Bà Trưng", "Quận Hai Bà Trưng, Hà Nội", "1900 6017", "IMAX, 4DX, Premium Lounge, Parking", "08:30 - 23:30", "4.8"},
+                {"Lotte", "Lotte Cinema Gò Vấp", "Tầng 3, Lotte Mart, 242 Nguyễn Văn Lượng, P. 10", "Quận Gò Vấp, TP. Hồ Chí Minh", "028 3620 2020", "Super Plex, Dolby Atmos, Parking", "08:00 - 23:00", "4.6"},
+                {"Galaxy", "Galaxy Nguyễn Du", "116 Nguyễn Du, P. Bến Thành", "Quận 1, TP. Hồ Chí Minh", "1900 2224", "Dolby Atmos, Food Court, Parking", "08:00 - 23:30", "4.7"},
+                {"Beta", "Beta Cinemas Quang Trung", "645 Quang Trung, P. 11", "Quận Gò Vấp, TP. Hồ Chí Minh", "0934 632 682", "Standard 2D/3D, Student Discount, Parking", "08:00 - 23:00", "4.5"},
+                {"BHD", "BHD Star Bitexco", "Tầng 3 & 4, TTTM Icon 68, 2 Hải Triều", "Quận 1, TP. Hồ Chí Minh", "1900 2099", "3D, First Class Lounge, Parking", "08:30 - 23:30", "4.6"}
         };
         List<Long> cinemaIds = new ArrayList<>();
         for (String[] c : cinemas) {
@@ -116,6 +142,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             cv.put("name", c[1]);
             cv.put("address", c[2]);
             cv.put("location", c[3]);
+            cv.put("phone", c[4]);
+            cv.put("facilities", c[5]);
+            cv.put("operating_hours", c[6]);
+            cv.put("rating", Double.parseDouble(c[7]));
             cinemaIds.add(db.insert("Cinemas", null, cv));
         }
 
@@ -184,12 +214,55 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             }
         }
 
-        // --- FOODS ---
+        // --- REVIEWS SEED ---
+        String[][] sampleReviews = {
+                {"Hoàng Nam", "9.0", "Phim xem cực kỳ đã mắt! Kỹ xảo hình ảnh và âm thanh vòm sống động vô cùng."},
+                {"Thu Hà", "8.5", "Diễn xuất đỉnh cao, kịch bản hấp dẫn từ đầu đến cuối. Rất đáng tiền vé xem rạp!"},
+                {"Minh Khoa", "9.5", "Tác phẩm điện ảnh xuất sắc nhất năm nay. Sẽ rủ thêm bạn bè đi xem lại lần nữa."},
+                {"Bảo Ngọc", "8.8", "Nội dung cảm động, nhịp phim vừa phải và tạo hình nhân vật rất tuyệt vời!"}
+        };
+
+        // Seed reviews for each movie
+        for (long mId = 1; mId <= movies.length; mId++) {
+            for (String[] rv : sampleReviews) {
+                ContentValues cv = new ContentValues();
+                cv.put("movie_id", mId);
+                cv.put("user_name", rv[0]);
+                cv.put("rating", Double.parseDouble(rv[1]));
+                cv.put("comment", rv[2]);
+                cv.put("created_at", "2026-11-08");
+                db.insert("Reviews", null, cv);
+            }
+        }
+
+        // --- PROMOTIONS SEED ---
+        String[][] promotions = {
+                {"THỨ 4 VUI VẺ", "Đồng giá 50.000đ/vé 2D mọi suất chiếu vào Thứ 4 hàng tuần", "Nhận mã ngay >", "ĐỒNG GIÁ 50K", "bg_promo_card1", "WED50K"},
+                {"COMBO COUPLE GIẢM 20%", "Giảm ngay 20% gói Bắp & Nước khi mua cùng cặp vé đôi", "Áp dụng ngay >", "GIẢM 20%", "bg_promo_card2", "COUPLE20"},
+                {"HỌC SINH - SINH VIÊN", "Giá vé ưu đãi chỉ từ 45.000đ từ T2 đến T6 cho HSSV", "Xem chi tiết >", "VÉ 45K", "bg_promo_card3", "STUDENT45"},
+                {"CINECLUB THÀNH VIÊN", "Tích điểm 10% cho mỗi giao dịch mua vé & bắp nước tại CineBox", "Đăng ký thẻ >", "TÍCH ĐIỂM 10%", "bg_promo_card1", "CINECLUB10"}
+        };
+        for (String[] pm : promotions) {
+            ContentValues cv = new ContentValues();
+            cv.put("title", pm[0]);
+            cv.put("description", pm[1]);
+            cv.put("action_text", pm[2]);
+            cv.put("badge", pm[3]);
+            cv.put("bg_gradient", pm[4]);
+            cv.put("discount_code", pm[5]);
+            db.insert("Promotions", null, cv);
+        }
+
+        // --- FOODS SEED (Real Cinema Concessions) ---
         String[][] foods = {
-                {"Combo Solo", "1 bắp ngọt + 1 nước", "Combo", "79000", "🍿"},
-                {"Combo Couple", "1 bắp lớn + 2 nước", "Combo", "109000", "🍿"},
-                {"Bắp ngọt", "Bắp rang vị ngọt (size M)", "Bắp", "55000", "🍿"},
-                {"Coca-Cola", "Ly 22oz", "Nước", "35000", "🥤"}
+                {"Combo Solo", "1 Bắp rang bơ (Size L) + 1 Nước ngọt Pepsi (22oz)", "Combo", "79000", "🍿"},
+                {"Combo Couple", "1 Bắp rang bơ lớn (Size L) + 2 Nước ngọt Pepsi (22oz)", "Combo", "109000", "🍿"},
+                {"Combo Party", "2 Bắp rang bơ lớn (Size L) + 4 Nước ngọt Pepsi + 1 Snack Khoai Tây", "Combo", "199000", "🍿"},
+                {"Combo Phô Mai Special", "1 Bắp phô mai giòn rụm (Size XL) + 2 Nước ngọt Pepsi (32oz)", "Combo", "129000", "🍿"},
+                {"Bắp Rang Bơ (Size L)", "Bắp rang bơ nóng hổi vị ngọt giòn thơm", "Bắp", "55000", "🍿"},
+                {"Bắp Rang Phô Mai (Size L)", "Bắp rang vị phô mai đậm đà giòn rụm", "Bắp", "65000", "🍿"},
+                {"Nước Ngọt Pepsi (22oz)", "Ly nước ngọt Pepsi mát lạnh 22oz", "Nước", "35000", "🥤"},
+                {"Nước Ngọt Coca-Cola (22oz)", "Ly nước ngọt Coca-Cola mát lạnh 22oz", "Nước", "35000", "🥤"}
         };
         for (String[] fd : foods) {
             ContentValues cv = new ContentValues();
@@ -215,18 +288,23 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public long registerUser(String username, String password, String fullname, String phone) {
+        return registerUser(username, password, fullname, username + "@gmail.com", phone);
+    }
+
+    public long registerUser(String username, String password, String fullname, String email, String phone) {
         ContentValues cv = new ContentValues();
         cv.put("username", username);
         cv.put("password", hash(password));
         cv.put("fullname", fullname);
+        cv.put("email", email != null && !email.isEmpty() ? email : username + "@gmail.com");
         cv.put("phone", phone);
         return getWritableDatabase().insert("Users", null, cv);
     }
 
     public long login(String username, String password) {
         try (Cursor c = getReadableDatabase().rawQuery(
-                "SELECT id FROM Users WHERE username = ? AND password = ?",
-                new String[]{username, hash(password)})) {
+                "SELECT id FROM Users WHERE (username = ? OR email = ?) AND password = ?",
+                new String[]{username, username, hash(password)})) {
             return c.moveToFirst() ? c.getLong(0) : -1;
         }
     }
@@ -236,6 +314,53 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "SELECT fullname FROM Users WHERE id = ?", new String[]{String.valueOf(userId)})) {
             return c.moveToFirst() ? c.getString(0) : "";
         }
+    }
+
+    public String[] getUserDetails(long userId) {
+        try (Cursor c = getReadableDatabase().rawQuery(
+                "SELECT username, fullname, email, phone FROM Users WHERE id = ?", new String[]{String.valueOf(userId)})) {
+            if (c.moveToFirst()) {
+                String un = c.getString(0) != null ? c.getString(0) : "";
+                String fn = c.getString(1) != null ? c.getString(1) : "";
+                String em = c.getString(2) != null ? c.getString(2) : un + "@gmail.com";
+                String ph = c.getString(3) != null ? c.getString(3) : "";
+                return new String[]{un, fn, em, ph};
+            }
+        }
+        return new String[]{"", "", "", ""};
+    }
+
+    public boolean updateUserProfile(long userId, String fullname, String email, String phone) {
+        ContentValues cv = new ContentValues();
+        cv.put("fullname", fullname);
+        cv.put("email", email);
+        cv.put("phone", phone);
+        int rows = getWritableDatabase().update("Users", cv, "id = ?", new String[]{String.valueOf(userId)});
+        if (rows <= 0 && userId > 0) {
+            cv.put("id", userId);
+            cv.put("username", "user");
+            cv.put("password", hash("1234"));
+            return getWritableDatabase().insert("Users", null, cv) > 0;
+        }
+        return rows > 0;
+    }
+
+    public boolean updateUserPassword(long userId, String email, String currentPassword, String newPassword) {
+        try (Cursor c = getReadableDatabase().rawQuery(
+                "SELECT id FROM Users WHERE id = ? AND (email = ? OR username = ?) AND password = ?",
+                new String[]{String.valueOf(userId), email, email, hash(currentPassword)})) {
+            if (!c.moveToFirst()) {
+                // Check if default user without explicit email
+                try (Cursor c2 = getReadableDatabase().rawQuery(
+                        "SELECT id FROM Users WHERE id = ? AND password = ?",
+                        new String[]{String.valueOf(userId), hash(currentPassword)})) {
+                    if (!c2.moveToFirst()) return false;
+                }
+            }
+        }
+        ContentValues cv = new ContentValues();
+        cv.put("password", hash(newPassword));
+        return getWritableDatabase().update("Users", cv, "id = ?", new String[]{String.valueOf(userId)}) > 0;
     }
 
     // ---------------- Movies / Cinemas / Showtimes / Food ----------------
@@ -260,7 +385,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public List<Cinema> getCinemas() {
         List<Cinema> list = new ArrayList<>();
         try (Cursor c = getReadableDatabase().rawQuery(
-                "SELECT id, brand, name, address, location FROM Cinemas ORDER BY id", null)) {
+                "SELECT id, brand, name, address, location, phone, facilities, operating_hours, rating FROM Cinemas ORDER BY id", null)) {
             while (c.moveToNext()) {
                 Cinema cinema = new Cinema();
                 cinema.id = c.getLong(0);
@@ -268,7 +393,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 cinema.name = c.getString(2);
                 cinema.address = c.getString(3);
                 cinema.location = c.getString(4);
+                cinema.phone = c.getString(5);
+                cinema.facilities = c.getString(6);
+                cinema.operatingHours = c.getString(7);
+                cinema.rating = c.getDouble(8);
                 list.add(cinema);
+            }
+        }
+        return list;
+    }
+
+    public List<String> getBrands() {
+        List<String> list = new ArrayList<>();
+        try (Cursor c = getReadableDatabase().rawQuery(
+                "SELECT DISTINCT brand FROM Cinemas WHERE brand IS NOT NULL AND brand != '' ORDER BY id", null)) {
+            while (c.moveToNext()) {
+                list.add(c.getString(0));
             }
         }
         return list;
@@ -276,7 +416,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public Cinema getCinema(long id) {
         try (Cursor c = getReadableDatabase().rawQuery(
-                "SELECT id, brand, name, address, location FROM Cinemas WHERE id = ?",
+                "SELECT id, brand, name, address, location, phone, facilities, operating_hours, rating FROM Cinemas WHERE id = ?",
                 new String[]{String.valueOf(id)})) {
             if (c.moveToFirst()) {
                 Cinema cinema = new Cinema();
@@ -285,10 +425,62 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 cinema.name = c.getString(2);
                 cinema.address = c.getString(3);
                 cinema.location = c.getString(4);
+                cinema.phone = c.getString(5);
+                cinema.facilities = c.getString(6);
+                cinema.operatingHours = c.getString(7);
+                cinema.rating = c.getDouble(8);
                 return cinema;
             }
             return null;
         }
+    }
+
+    public List<Review> getReviewsForMovie(long movieId) {
+        List<Review> list = new ArrayList<>();
+        try (Cursor c = getReadableDatabase().rawQuery(
+                "SELECT id, movie_id, user_name, rating, comment, created_at FROM Reviews WHERE movie_id = ? ORDER BY id DESC",
+                new String[]{String.valueOf(movieId)})) {
+            while (c.moveToNext()) {
+                Review r = new Review();
+                r.id = c.getLong(0);
+                r.movieId = c.getLong(1);
+                r.userName = c.getString(2);
+                r.rating = c.getDouble(3);
+                r.comment = c.getString(4);
+                r.createdAt = c.getString(5);
+                list.add(r);
+            }
+        }
+        return list;
+    }
+
+    public List<Promotion> getPromotions() {
+        List<Promotion> list = new ArrayList<>();
+        try (Cursor c = getReadableDatabase().rawQuery(
+                "SELECT id, title, description, action_text, badge, bg_gradient, discount_code FROM Promotions ORDER BY id", null)) {
+            while (c.moveToNext()) {
+                Promotion p = new Promotion();
+                p.id = c.getLong(0);
+                p.title = c.getString(1);
+                p.description = c.getString(2);
+                p.actionText = c.getString(3);
+                p.badge = c.getString(4);
+                p.bgGradient = c.getString(5);
+                p.discountCode = c.getString(6);
+                list.add(p);
+            }
+        }
+        return list;
+    }
+
+    public long addReview(long movieId, String userName, double rating, String comment) {
+        ContentValues cv = new ContentValues();
+        cv.put("movie_id", movieId);
+        cv.put("user_name", userName);
+        cv.put("rating", rating);
+        cv.put("comment", comment);
+        cv.put("created_at", new SimpleDateFormat("yyyy-MM-dd", Locale.US).format(new Date()));
+        return getWritableDatabase().insert("Reviews", null, cv);
     }
 
     public List<Showtime> getShowtimesForCinema(long cinemaId, String date) {

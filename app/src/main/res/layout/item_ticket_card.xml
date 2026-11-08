@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="12dp"
+    android:layout_marginBottom="16dp"
+    app:cardCornerRadius="20dp"
+    app:cardElevation="3dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Top Row: Logo, Title, Ticket Code -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/ivCinemaLogo"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:src="@drawable/cgv" />
+
+            <TextView
+                android:id="@+id/tvMovieTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="12dp"
+                android:layout_toStartOf="@id/tvTicketCode"
+                android:layout_toEndOf="@id/ivCinemaLogo"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="@color/text_main"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvTicketCode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:background="@drawable/bg_btn_book"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="4dp"
+                android:text="BTL000001"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+        </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginVertical="12dp"
+            android:background="#EEEEEE" />
+
+        <!-- Ticket Info Summary -->
+        <TextView
+            android:id="@+id/tvCinemaInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Rạp: CGV Aeon Bình Tân • Phòng 1"
+            android:textColor="@color/text_main"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvShowTimeInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Thời gian: 21:30 - 08/11/2026 (2D)"
+            android:textColor="@color/text_sub"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/tvSeatInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Vị trí ghế: C5, D5"
+            android:textColor="@color/cinema_red"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvFoodInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Bắp nước: 1x Combo Solo"
+            android:textColor="@color/text_sub"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/tvPaymentInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Tổng tiền: 279.000đ • Thanh toán tại quầy"
+            android:textColor="@color/text_sub"
+            android:textSize="13sp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginVertical="12dp"
+            android:background="#EEEEEE" />
+
+        <!-- Barcode (Mã Vạch 1D) Section for Staff Scanning -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_location_chip"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="14dp">
+
+            <!-- Barcode 1D Image -->
+            <ImageView
+                android:id="@+id/ivBarcode"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:background="@color/white"
+                android:contentDescription="Mã Vạch Soát Vé"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="8dp"
+                android:scaleType="fitXY" />
+
+            <TextView
+                android:id="@+id/tvBarcodeNumber"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:letterSpacing="0.2"
+                android:text="BTL000001"
+                android:textColor="@color/text_main"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <!-- QR Code (Optional) -->
+            <ImageView
+                android:id="@+id/ivQRCode"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_marginTop="8dp"
+                android:contentDescription="Mã QR phụ"
+                android:scaleType="fitCenter" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="center"
+                android:text="MÃ VẠCH SOÁT VÉ KHI VÀO RẠP"
+                android:textColor="@color/text_main"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:gravity="center"
+                android:text="Vui lòng đưa mã vạch này cho nhân viên soát vé quét tại cửa rạp"
+                android:textColor="@color/text_sub"
+                android:textSize="11sp" />
+        </LinearLayout>
+
+        <!-- Actions Row -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/btnAddToCalendar"
+                android:layout_width="0dp"
+                android:layout_height="38dp"
+                android:layout_marginEnd="6dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_search_input"
+                android:gravity="center"
+                android:text="Thêm vào Lịch"
+                android:textColor="@color/text_main"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/btnCancelTicket"
+                android:layout_width="0dp"
+                android:layout_height="38dp"
+                android:layout_marginStart="6dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_location_chip"
+                android:gravity="center"
+                android:text="Hủy vé"
+                android:textColor="@color/cinema_red"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

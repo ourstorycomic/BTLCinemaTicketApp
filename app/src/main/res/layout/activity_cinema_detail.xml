@@ -1,60 +1,129 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="#F5F5F5">
+    android:background="@color/bg_light"
+    android:orientation="vertical">
 
     <!-- Header -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
+        android:background="#FFFFFF"
+        android:elevation="2dp"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:background="#FFFFFF"
         android:paddingHorizontal="16dp">
 
         <ImageView
             android:id="@+id/ivBack"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/ic_arrow_back" />
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:src="@drawable/ic_arrow_back"
+            app:tint="@color/black" />
 
         <TextView
             android:id="@+id/tvCinemaNameHeader"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:layout_marginStart="16dp"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:maxLines="1"
             android:textColor="#000000"
             android:textSize="20sp"
-            android:textStyle="bold"
-            android:maxLines="1"
-            android:ellipsize="end" />
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <!-- Cinema Information Card -->
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="12dp"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="2dp">
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/bg_rounded_border"
-            android:paddingHorizontal="8dp"
-            android:paddingVertical="4dp"
-            android:gravity="center">
-            <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:src="@drawable/ic_headset" />
-            <View
-                android:layout_width="1dp"
-                android:layout_height="16dp"
-                android:layout_marginHorizontal="8dp"
-                android:background="#DDDDDD" />
-            <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:src="@drawable/ic_home_top" />
+            android:orientation="vertical"
+            android:padding="14dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tvBrandTag"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_btn_book"
+                    android:paddingHorizontal="8dp"
+                    android:paddingVertical="3dp"
+                    android:text="CGV"
+                    android:textColor="@color/white"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvCinemaFullTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="CGV Aeon Bình Tân"
+                    android:textColor="@color/text_main"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvCinemaAddress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="📍 Địa chỉ: Tầng 3, TTTM Aeon Mall Bình Tân"
+                android:textColor="@color/text_sub"
+                android:textSize="13sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tvCinemaPhone"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="📞 Hotline: 1900 6017"
+                    android:textColor="@color/text_sub"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/tvCinemaHours"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="⏰ 08:00 - 23:30"
+                    android:textColor="@color/text_sub"
+                    android:textSize="13sp" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvCinemaFacilities"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="✨ Tiện ích: 4DX • IMAX • Dolby Atmos • Sweetbox • Parking"
+                android:textColor="@color/cinema_red"
+                android:textSize="12sp"
+                android:textStyle="bold" />
         </LinearLayout>
-    </LinearLayout>
+    </androidx.cardview.widget.CardView>
 
     <!-- Dates RecyclerView -->
     <androidx.recyclerview.widget.RecyclerView
@@ -62,8 +131,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#FFFFFF"
-        android:padding="8dp"
-        android:clipToPadding="false" />
+        android:clipToPadding="false"
+        android:padding="8dp" />
 
     <!-- Time Filter RecyclerView -->
     <androidx.recyclerview.widget.RecyclerView
@@ -71,9 +140,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#FFFFFF"
-        android:paddingBottom="8dp"
+        android:clipToPadding="false"
         android:paddingHorizontal="8dp"
-        android:clipToPadding="false" />
+        android:paddingBottom="8dp" />
 
     <TextView
         android:layout_width="match_parent"
@@ -81,9 +150,9 @@
         android:background="#FFFFFF"
         android:paddingHorizontal="16dp"
         android:paddingVertical="12dp"
-        android:text="DANH SÁCH PHIM"
+        android:text="DANH SÁCH PHIM DỰ KIẾN CHIẾU"
         android:textColor="#555555"
-        android:textSize="18sp"
+        android:textSize="16sp"
         android:textStyle="bold" />
 
     <View

@@ -1,40 +1,38 @@
 package com.example.btlcinematicketapp;
 
 import android.content.Intent;
-import android.content.res.ColorStateList;
-import android.graphics.Color;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.GridLayout;
+import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.btlcinematicketapp.adapter.ReviewAdapter;
 import com.example.btlcinematicketapp.database.DatabaseHelper;
 import com.example.btlcinematicketapp.model.Models.Movie;
-import com.example.btlcinematicketapp.model.Models.Showtime;
+import com.example.btlcinematicketapp.model.Models.Review;
+import com.example.btlcinematicketapp.util.Session;
 import com.example.btlcinematicketapp.util.TimeUtil;
 import com.example.btlcinematicketapp.util.UiUtil;
-import com.google.android.material.button.MaterialButton;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Locale;
 
 public class MovieDetailActivity extends AppCompatActivity {
-    private static final int RED = 0xFFE50914, GREY = 0xFF3A3A3A;
-    private static final String[] DOW = {"CN", "T2", "T3", "T4", "T5", "T6", "T7"};
-
-    private final Map<String, List<Showtime>> byDate = new LinkedHashMap<>();
-    private final List<MaterialButton> dateButtons = new ArrayList<>();
-    private LinearLayout dateContainer;
-    private GridLayout gridShowtimes;
-    private TextView tvNoShow;
+    private DatabaseHelper db;
+    private Movie movie;
+    private TextView btnBookTicket;
+    private RecyclerView rvReviews;
+    private ReviewAdapter reviewAdapter;
+    private List<Review> reviewList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,95 +41,113 @@ public class MovieDetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_movie_detail);
         UiUtil.applyInsets(findViewById(R.id.root));
 
-        DatabaseHelper db = new DatabaseHelper(this);
-        Movie m = db.getMovie(getIntent().getLongExtra("movie_id", -1));
-        if (m == null) {
+        View btnBack = findViewById(R.id.ivBack);
+        if (btnBack != null) btnBack.setOnClickListener(v -> finish());
+
+        db = new DatabaseHelper(this);
+        movie = db.getMovie(getIntent().getLongExtra("movie_id", -1));
+        if (movie == null) {
             finish();
             return;
         }
 
-        ((ImageView) findViewById(R.id.imgPoster)).setImageResource(UiUtil.posterRes(this, m.posterName));
-        ((TextView) findViewById(R.id.tvTitle)).setText(m.title);
-        ((TextView) findViewById(R.id.tvAge)).setText(m.ageRating);
-        ((TextView) findViewById(R.id.tvMeta)).setText(m.genre + " • " + m.duration + " phút • ★ " + m.rating);
-        ((TextView) findViewById(R.id.tvDirector)).setText("Đạo diễn: " + m.director);
-        ((TextView) findViewById(R.id.tvCast)).setText("Diễn viên: " + m.cast);
-        ((TextView) findViewById(R.id.tvLang)).setText("Ngôn ngữ: " + m.language);
-        ((TextView) findViewById(R.id.tvRelease)).setText("Khởi chiếu: " + TimeUtil.fmtDate(m.releaseDate));
-        ((TextView) findViewById(R.id.tvDesc)).setText(m.description);
+        btnBookTicket = findViewById(R.id.btnBookTicket);
 
-        dateContainer = findViewById(R.id.dateContainer);
-        gridShowtimes = findViewById(R.id.gridShowtimes);
-        tvNoShow = findViewById(R.id.tvNoShow);
+        // Bind Movie Data dynamically from SQLite Database
+        ((ImageView) findViewById(R.id.imgPoster)).setImageResource(UiUtil.posterRes(this, movie.posterName));
+        ((TextView) findViewById(R.id.tvTitle)).setText(movie.title);
+        ((TextView) findViewById(R.id.tvAge)).setText(movie.ageRating != null ? movie.ageRating : "P");
 
-        // Gom suất chưa chiếu theo ngày
-        for (Showtime s : db.getShowtimes(m.id)) {
-            if (TimeUtil.showMillis(s.showDate, s.showTime) <= System.currentTimeMillis()) continue;
-            if (!byDate.containsKey(s.showDate)) byDate.put(s.showDate, new ArrayList<>());
-            byDate.get(s.showDate).add(s);
+        TextView tvRatingScore = findViewById(R.id.tvRatingScore);
+        if (tvRatingScore != null) {
+            tvRatingScore.setText(String.format(Locale.US, "%.1f / 10", movie.rating));
         }
 
-        if (byDate.isEmpty()) {
-            tvNoShow.setVisibility(View.VISIBLE);
-            return;
+        TextView tvDuration = findViewById(R.id.tvDuration);
+        if (tvDuration != null) {
+            tvDuration.setText(movie.duration + " phút");
         }
-        buildDateChips();
-        selectDate(0);
-    }
 
-    private void buildDateChips() {
-        int margin = UiUtil.dp(this, 4);
-        for (String date : byDate.keySet()) {
-            String[] p = date.split("-");
-            Calendar c = Calendar.getInstance();
-            c.set(Integer.parseInt(p[0]), Integer.parseInt(p[1]) - 1, Integer.parseInt(p[2]));
-
-            MaterialButton b = new MaterialButton(this);
-            b.setText(DOW[c.get(Calendar.DAY_OF_WEEK) - 1] + "\n" + p[2] + "/" + p[1]);
-            b.setAllCaps(false);
-            b.setTextColor(Color.WHITE);
-            b.setBackgroundTintList(ColorStateList.valueOf(GREY));
-
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-                    UiUtil.dp(this, 68), UiUtil.dp(this, 58));
-            lp.setMargins(margin, 0, margin, 0);
-            b.setLayoutParams(lp);
-
-            final int index = dateButtons.size();
-            b.setOnClickListener(v -> selectDate(index));
-            dateButtons.add(b);
-            dateContainer.addView(b);
+        TextView tvGenre = findViewById(R.id.tvGenre);
+        if (tvGenre != null) {
+            tvGenre.setText(movie.genre != null ? movie.genre : "Điện ảnh");
         }
-    }
 
-    private void selectDate(int index) {
-        for (int i = 0; i < dateButtons.size(); i++) {
-            dateButtons.get(i).setBackgroundTintList(ColorStateList.valueOf(i == index ? RED : GREY));
+        TextView tvLang = findViewById(R.id.tvLang);
+        if (tvLang != null) {
+            tvLang.setText(movie.language != null ? movie.language : "Tiếng Việt");
         }
-        String date = new ArrayList<>(byDate.keySet()).get(index);
-        gridShowtimes.removeAllViews();
-        int margin = UiUtil.dp(this, 4);
 
-        for (Showtime s : byDate.get(date)) {
-            MaterialButton b = new MaterialButton(this, null,
-                    com.google.android.material.R.attr.materialButtonOutlinedStyle);
-            b.setText(s.showTime + "\n" + s.format + " • " + s.room + "\n" + TimeUtil.money(s.price));
-            b.setAllCaps(false);
-            b.setTextSize(12);
+        ((TextView) findViewById(R.id.tvDirector)).setText("Đạo diễn: " + (movie.director != null ? movie.director : "Đang cập nhật"));
+        ((TextView) findViewById(R.id.tvCast)).setText("Diễn viên: " + (movie.cast != null ? movie.cast : "Đang cập nhật"));
+        ((TextView) findViewById(R.id.tvRelease)).setText("Khởi chiếu: " + TimeUtil.fmtDate(movie.releaseDate));
+        ((TextView) findViewById(R.id.tvDesc)).setText(movie.description != null ? movie.description : "Chưa có mô tả.");
 
-            GridLayout.LayoutParams lp = new GridLayout.LayoutParams(
-                    GridLayout.spec(GridLayout.UNDEFINED), GridLayout.spec(GridLayout.UNDEFINED, 1f));
-            lp.width = 0;
-            lp.height = UiUtil.dp(this, 84);
-            lp.setMargins(margin, margin, margin, margin);
-            b.setLayoutParams(lp);
+        // Reviews RecyclerView
+        rvReviews = findViewById(R.id.rvReviews);
+        rvReviews.setLayoutManager(new LinearLayoutManager(this));
+        rvReviews.setNestedScrollingEnabled(false);
 
-            b.setOnClickListener(v -> {
-                Intent i = new Intent(this, SeatActivity.class);
-                i.putExtra("showtime_id", s.id);
-                startActivity(i);
+        View btnWriteReview = findViewById(R.id.btnWriteReview);
+        if (btnWriteReview != null) {
+            btnWriteReview.setOnClickListener(v -> showAddReviewDialog());
+        }
+
+        loadReviews();
+
+        // 'Mua vé ngay' button -> Launches dedicated MovieShowtimeActivity
+        if (btnBookTicket != null) {
+            btnBookTicket.setOnClickListener(v -> {
+                Intent intent = new Intent(MovieDetailActivity.this, MovieShowtimeActivity.class);
+                intent.putExtra("movie_id", movie.id);
+                startActivity(intent);
             });
-            gridShowtimes.addView(b);
         }
+    }
+
+    private void loadReviews() {
+        reviewList = db.getReviewsForMovie(movie.id);
+        TextView tvReviewCount = findViewById(R.id.tvReviewCount);
+        if (tvReviewCount != null) {
+            tvReviewCount.setText("(" + reviewList.size() + " đánh giá từ cộng đồng)");
+        }
+        reviewAdapter = new ReviewAdapter(reviewList);
+        rvReviews.setAdapter(reviewAdapter);
+    }
+
+    private void showAddReviewDialog() {
+        final EditText etName = new EditText(this);
+        etName.setHint("Tên của bạn");
+        long userId = Session.getUserId(this);
+        String savedName = db.getFullname(userId);
+        if (!savedName.isEmpty()) etName.setText(savedName);
+
+        final EditText etComment = new EditText(this);
+        etComment.setHint("Nhập nhận xét của bạn về bộ phim...");
+        etComment.setMinLines(3);
+
+        android.widget.LinearLayout container = new android.widget.LinearLayout(this);
+        container.setOrientation(android.widget.LinearLayout.VERTICAL);
+        container.setPadding(40, 20, 40, 20);
+        container.addView(etName);
+        container.addView(etComment);
+
+        new AlertDialog.Builder(this)
+                .setTitle("Viết Đánh Giá Phim")
+                .setView(container)
+                .setPositiveButton("Gửi đánh giá", (dialog, which) -> {
+                    String author = etName.getText().toString().trim();
+                    String text = etComment.getText().toString().trim();
+                    if (author.isEmpty()) author = "Khách xem phim";
+                    if (text.isEmpty()) {
+                        Toast.makeText(this, "Vui lòng nhập nội dung đánh giá", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    db.addReview(movie.id, author, 9.0, text);
+                    Toast.makeText(this, "Cảm ơn bạn đã gửi đánh giá!", Toast.LENGTH_SHORT).show();
+                    loadReviews();
+                })
+                .setNegativeButton("Hủy", null)
+                .show();
     }
 }

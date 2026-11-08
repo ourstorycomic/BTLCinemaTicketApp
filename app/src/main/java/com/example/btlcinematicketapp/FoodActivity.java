@@ -25,6 +25,8 @@ public class FoodActivity extends AppCompatActivity {
         setContentView(R.layout.activity_food);
         UiUtil.applyInsets(findViewById(R.id.root));
 
+        findViewById(R.id.ivBack).setOnClickListener(v -> finish());
+
         long showtimeId = getIntent().getLongExtra("showtime_id", -1);
         String seats = getIntent().getStringExtra("seats");
         if (showtimeId < 0 || seats == null) {

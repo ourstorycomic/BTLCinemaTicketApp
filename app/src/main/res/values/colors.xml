@@ -3,4 +3,20 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="cinema_red">#FFE50914</color>
+    <color name="cinema_red_dark">#FFB71C1C</color>
+    <color name="cinema_red_soft">#1AE50914</color>
+    <color name="gold_star">#FFB800</color>
+    <color name="bg_light">#F5F7FA</color>
+
+    <color name="text_main">#1E1E2C</color>
+    <color name="text_sub">#757575</color>
+    <color name="card_bg">#FFFFFF</color>
+
+    <!-- Promo Card Gradients -->
+    <color name="promo_1_start">#FF4169E1</color>
+    <color name="promo_1_end">#FF8A2BE2</color>
+    <color name="promo_2_start">#FFE50914</color>
+    <color name="promo_2_end">#FFFF8C00</color>
+    <color name="promo_3_start">#FF00B4DB</color>
+    <color name="promo_3_end">#FF0083B0</color>
 </resources>
