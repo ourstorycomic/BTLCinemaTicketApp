@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_location_chip"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <!-- Emoji Container -->
+    <TextView
+        android:id="@+id/tvDetailEmoji"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_gravity="center"
+        android:background="@drawable/bg_quick_action"
+        android:gravity="center"
+        android:text="🍿"
+        android:textSize="40sp" />
+
+    <!-- Name & Category -->
+    <TextView
+        android:id="@+id/tvDetailName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:gravity="center"
+        android:text="Combo Couple"
+        android:textColor="@color/text_main"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tvDetailCategory"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="4dp"
+        android:background="@drawable/bg_tag_cinema"
+        android:paddingHorizontal="10dp"
+        android:paddingVertical="3dp"
+        android:text="Gói Ưu Đãi Combo"
+        android:textColor="@color/cinema_red"
+        android:textSize="12sp"
+        android:textStyle="bold" />
+
+    <!-- Description & Item list -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Chi tiết khẩu phần:"
+        android:textColor="@color/text_main"
+        android:textSize="14sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tvDetailDesc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:lineSpacingExtra="4dp"
+        android:text="• 1 Bắp rang bơ vị ngọt lớn (Size L)\n• 2 Ly nước ngọt Pepsi mát lạnh (22oz)\n• Tặng kèm 1 thẻ quà tặng giảm giá lượt xem tiếp theo."
+        android:textColor="@color/text_sub"
+        android:textSize="14sp" />
+
+    <!-- Price -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:text="Giá niêm yết:"
+            android:textColor="@color/text_sub"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/tvDetailPrice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:text="109.000đ"
+            android:textColor="@color/cinema_red"
+            android:textSize="22sp"
+            android:textStyle="bold" />
+    </RelativeLayout>
+
+    <!-- Close / Action Button -->
+    <TextView
+        android:id="@+id/btnDetailClose"
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/bg_btn_book"
+        android:gravity="center"
+        android:text="Đóng"
+        android:textColor="@color/white"
+        android:textSize="15sp"
+        android:textStyle="bold" />
+</LinearLayout>
