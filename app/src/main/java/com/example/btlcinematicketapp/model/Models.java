@@ -10,11 +10,20 @@ public class Models {
         public double rating;       // điểm /10
     }
 
+    public static class Cinema {
+        public long id;
+        public String brand;
+        public String name;
+        public String address;
+        public String location;
+    }
+
     public static class Showtime {
-        public long id, movieId;
+        public long id, movieId, cinemaId;
         public String showDate, showTime; // yyyy-MM-dd, HH:mm
         public int price;
         public String room, format;       // "Phòng 1", "2D"
+        public int totalSeats;
     }
 
     public static class FoodItem {
@@ -32,7 +41,7 @@ public class Models {
         public String paymentMethod;
         public int remindDays;        // 0 = không nhắc
         public long remindAt;         // millis, 0 = không nhắc
-        public String movieTitle, showDate, showTime, room, format;
+        public String movieTitle, showDate, showTime, room, format, cinemaName;
         public int duration;
         public String foodSummary;    // "2x Bắp ngọt, 1x Coca" (rỗng nếu không có)
 

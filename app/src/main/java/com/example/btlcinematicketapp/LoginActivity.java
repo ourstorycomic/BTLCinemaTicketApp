@@ -88,7 +88,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void openMain() {
-        startActivity(new Intent(this, MainActivity.class));
+        startActivity(new Intent(this, HomeActivity.class));
         finish();
     }
 }

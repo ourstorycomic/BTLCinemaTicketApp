@@ -51,9 +51,11 @@ public class MyTicketsActivity extends AppCompatActivity {
                         : "Không đặt nhắc";
                 String food = t.foodSummary == null || t.foodSummary.isEmpty()
                         ? "" : "\nBắp nước: " + t.foodSummary;
+                String cinema = t.cinemaName != null ? "\nRạp: " + t.cinemaName : "";
                 ((TextView) v.findViewById(android.R.id.text1)).setText(t.movieTitle + "  •  " + t.code());
                 ((TextView) v.findViewById(android.R.id.text2)).setText(
                         t.showTime + " - " + TimeUtil.fmtDate(t.showDate) + " | " + t.room + " | " + t.format
+                                + cinema
                                 + "\nGhế: " + t.seats + food
                                 + "\nTổng: " + TimeUtil.money(t.totalPrice) + " | " + t.paymentMethod
                                 + "\n" + remind);

@@ -41,15 +41,7 @@ public class MainActivity extends AppCompatActivity {
         UiUtil.applyInsets(findViewById(R.id.root));
 
         DatabaseHelper db = new DatabaseHelper(this);
-        ((TextView) findViewById(R.id.tvGreeting)).setText("Xin chào, " + db.getFullname(userId));
-
-        findViewById(R.id.btnTickets).setOnClickListener(
-                v -> startActivity(new Intent(this, MyTicketsActivity.class)));
-        findViewById(R.id.btnLogout).setOnClickListener(v -> {
-            Session.logout(this);
-            startActivity(new Intent(this, LoginActivity.class));
-            finish();
-        });
+        findViewById(R.id.ivBack).setOnClickListener(v -> finish());
 
         allMovies.addAll(db.getMovies());
         adapter = new MovieAdapter(m -> {

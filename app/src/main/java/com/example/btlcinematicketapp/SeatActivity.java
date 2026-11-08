@@ -43,12 +43,14 @@ public class SeatActivity extends AppCompatActivity {
         db = new DatabaseHelper(this);
         showtime = db.getShowtime(getIntent().getLongExtra("showtime_id", -1));
         Movie movie = showtime == null ? null : db.getMovie(showtime.movieId);
-        if (movie == null) {
+        com.example.btlcinematicketapp.model.Models.Cinema cinema = showtime == null ? null : db.getCinema(showtime.cinemaId);
+        if (movie == null || cinema == null) {
             finish();
             return;
         }
 
         ((TextView) findViewById(R.id.tvHeader)).setText(movie.title + "\n"
+                + cinema.name + "\n"
                 + showtime.showTime + " - " + TimeUtil.fmtDate(showtime.showDate)
                 + " | " + showtime.room + " | " + showtime.format
                 + "\n" + TimeUtil.money(showtime.price) + "/ghế");

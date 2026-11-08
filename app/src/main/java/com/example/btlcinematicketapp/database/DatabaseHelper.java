@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.text.TextUtils;
 
+import com.example.btlcinematicketapp.model.Models.Cinema;
 import com.example.btlcinematicketapp.model.Models.FoodItem;
 import com.example.btlcinematicketapp.model.Models.Movie;
 import com.example.btlcinematicketapp.model.Models.Showtime;
@@ -23,19 +24,20 @@ import java.util.Set;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "CinemaBooking.db";
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 4;
 
     private static final String MOVIE_COLS =
             "id, title, description, poster_url, duration, genre, director, cast_list, " +
             "age_rating, language, release_date, rating ";
     private static final String SHOW_COLS =
-            "id, movie_id, show_date, show_time, price, room, format ";
+            "id, movie_id, cinema_id, show_date, show_time, price, room, format, total_seats ";
     private static final String TICKET_SELECT =
             "SELECT t.id, t.user_id, t.showtime_id, t.seat_number, t.booking_date, t.total_price, " +
             "t.remind_days, t.remind_at, m.title, s.show_date, s.show_time, m.duration, " +
-            "s.room, s.format, t.food_total, t.payment_method " +
+            "s.room, s.format, t.food_total, t.payment_method, c.name " +
             "FROM Tickets t JOIN Showtimes s ON s.id = t.showtime_id " +
-            "JOIN Movies m ON m.id = s.movie_id ";
+            "JOIN Movies m ON m.id = s.movie_id " +
+            "JOIN Cinemas c ON c.id = s.cinema_id ";
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -53,17 +55,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "genre TEXT, director TEXT, cast_list TEXT, age_rating TEXT, " +
                 "language TEXT, release_date TEXT, rating REAL)");
 
+        db.execSQL("CREATE TABLE Cinemas (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "brand TEXT, name TEXT, address TEXT, location TEXT)");
+
         db.execSQL("CREATE TABLE Showtimes (" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "movie_id INTEGER, show_date TEXT, show_time TEXT, price INTEGER, " +
-                "room TEXT, format TEXT, " +
-                "FOREIGN KEY(movie_id) REFERENCES Movies(id))");
+                "movie_id INTEGER, cinema_id INTEGER, show_date TEXT, show_time TEXT, price INTEGER, " +
+                "room TEXT, format TEXT, total_seats INTEGER, " +
+                "FOREIGN KEY(movie_id) REFERENCES Movies(id), " +
+                "FOREIGN KEY(cinema_id) REFERENCES Cinemas(id))");
 
         db.execSQL("CREATE TABLE FoodItems (" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "name TEXT, description TEXT, category TEXT, price INTEGER, emoji TEXT)");
 
-        // seat_number: danh sách ghế của 1 lần đặt, vd "A1,A2"
         db.execSQL("CREATE TABLE Tickets (" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "user_id INTEGER, showtime_id INTEGER, seat_number TEXT, booking_date TEXT, " +
@@ -87,14 +93,33 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS Tickets");
         db.execSQL("DROP TABLE IF EXISTS FoodItems");
         db.execSQL("DROP TABLE IF EXISTS Showtimes");
+        db.execSQL("DROP TABLE IF EXISTS Cinemas");
         db.execSQL("DROP TABLE IF EXISTS Movies");
         db.execSQL("DROP TABLE IF EXISTS Users");
         onCreate(db);
     }
 
-    /** Dữ liệu mẫu. Tất cả phim dùng chung poster_default - thay ảnh này (hoặc đổi tên ở cột poster_url). */
     private void seed(SQLiteDatabase db) {
-        // title, description, duration, genre, director, cast, age, language, release, rating
+        // --- CINEMAS ---
+        String[][] cinemas = {
+                {"CGV", "CGV Aeon Bình Tân", "Tầng 3, Trung tâm thương mại Aeon Mall Bình Tân...", "Quận Bình Tân"},
+                {"CGV", "CGV Aeon Tân Phú", "Lầu 3, Aeon Mall 30 Bờ Bao Tân Thắng, P. Sơn Kỳ...", "Quận Tân Phú"},
+                {"CGV", "CGV Crescent Mall", "Tầng 5 | Crescent Mall, số 101 đường Tôn Dật Tiên...", "Quận 7"},
+                {"Lotte", "Lotte Cinema Gò Vấp", "Tầng 3 Lotte Mart Gò Vấp, 242 Nguyễn Văn Lượng...", "Quận Gò Vấp"},
+                {"Galaxy", "Galaxy Nguyễn Du", "116 Nguyễn Du, Quận 1...", "Quận 1"},
+                {"Beta", "Beta Cinemas Quang Trung", "645 Quang Trung, P.11, Gò Vấp...", "Quận Gò Vấp"}
+        };
+        List<Long> cinemaIds = new ArrayList<>();
+        for (String[] c : cinemas) {
+            ContentValues cv = new ContentValues();
+            cv.put("brand", c[0]);
+            cv.put("name", c[1]);
+            cv.put("address", c[2]);
+            cv.put("location", c[3]);
+            cinemaIds.add(db.insert("Cinemas", null, cv));
+        }
+
+        // --- MOVIES ---
         String[][] movies = {
                 {"Biệt Đội Săn Ma", "Nhóm bạn trẻ mở dịch vụ trừ tà và vướng vào một vụ án bí ẩn trong căn biệt thự bỏ hoang.",
                         "112", "Kinh dị, Hài", "Nguyễn Hải Phong", "Lan Anh, Quốc Việt, Thu Hà", "T13", "Tiếng Việt", "2026-10-24", "7.4"},
@@ -110,16 +135,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         "118", "Hành động", "Marcus Reed", "Jake Turner, Linh Đan", "T18", "Phụ đề tiếng Việt", "2026-11-05", "7.6"}
         };
         String[] posters = {
-                "poster_biet_doi",
-                "poster_tinh_yeu",
-                "poster_vu_tru",
-                "poster_tham_tu",
-                "poster_rung_xanh",
-                "poster_cuoc_dua"
+                "poster_biet_doi", "poster_tinh_yeu", "poster_vu_tru",
+                "poster_tham_tu", "poster_rung_xanh", "poster_cuoc_dua"
         };
-        String[] times = {"10:00", "14:30", "19:30", "21:45"};
-        int[] prices = {90000, 90000, 110000, 100000};
-        String[] rooms = {"Phòng 1", "Phòng 2", "Phòng 3", "Phòng 1"};
+        String[] times = {"17:40", "19:00", "20:00", "21:30", "22:30", "23:25"};
+        int[] prices = {90000, 110000, 110000, 110000, 90000, 90000};
+        String[] rooms = {"Phòng 1", "Phòng 2", "Phòng 3", "Phòng 1", "Phòng 2", "Phòng 3"};
         SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 
         int idx = 0;
@@ -139,38 +160,36 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             mv.put("rating", Double.parseDouble(m[9]));
             long movieId = db.insert("Movies", null, mv);
 
-            for (int d = 0; d <= 6; d++) {
-                Calendar c = Calendar.getInstance();
-                c.add(Calendar.DAY_OF_YEAR, d);
-                String date = f.format(c.getTime());
-                for (int i = 0; i < times.length; i++) {
-                    ContentValues sv = new ContentValues();
-                    sv.put("movie_id", movieId);
-                    sv.put("show_date", date);
-                    sv.put("show_time", times[i]);
-                    sv.put("price", prices[i]);
-                    sv.put("room", rooms[i]);
-                    // phim 3 và 6: suất tối chiếu 3D
-                    sv.put("format", (idx == 3 || idx == 6) && i >= 2 ? "3D" : "2D");
-                    db.insert("Showtimes", null, sv);
+            for (long cinemaId : cinemaIds) {
+                for (int d = 0; d <= 6; d++) {
+                    Calendar c = Calendar.getInstance();
+                    c.add(Calendar.DAY_OF_YEAR, d);
+                    String date = f.format(c.getTime());
+                    
+                    // Create some random showtimes for this movie at this cinema
+                    int showCount = (int) (Math.random() * 3) + 2; // 2 to 4 shows
+                    for (int i = 0; i < showCount; i++) {
+                        ContentValues sv = new ContentValues();
+                        sv.put("movie_id", movieId);
+                        sv.put("cinema_id", cinemaId);
+                        sv.put("show_date", date);
+                        sv.put("show_time", times[(idx + i + d) % times.length]);
+                        sv.put("price", prices[i % prices.length]);
+                        sv.put("room", rooms[i % rooms.length]);
+                        sv.put("format", (idx == 3 || idx == 6) && i >= 1 ? "3D" : "2D");
+                        sv.put("total_seats", (int) (Math.random() * 100) + 100); // 100 to 200 seats
+                        db.insert("Showtimes", null, sv);
+                    }
                 }
             }
         }
 
-        // name, description, category, price, emoji
+        // --- FOODS ---
         String[][] foods = {
                 {"Combo Solo", "1 bắp ngọt + 1 nước", "Combo", "79000", "🍿"},
                 {"Combo Couple", "1 bắp lớn + 2 nước", "Combo", "109000", "🍿"},
-                {"Combo Family", "2 bắp lớn + 4 nước", "Combo", "189000", "🍿"},
                 {"Bắp ngọt", "Bắp rang vị ngọt (size M)", "Bắp", "55000", "🍿"},
-                {"Bắp phô mai", "Bắp rang phủ bột phô mai", "Bắp", "65000", "🧀"},
-                {"Bắp caramel", "Bắp rang caramel giòn", "Bắp", "65000", "🍿"},
-                {"Coca-Cola", "Ly 22oz", "Nước", "35000", "🥤"},
-                {"Sprite", "Ly 22oz", "Nước", "35000", "🥤"},
-                {"Trà đào", "Trà đào cam sả", "Nước", "45000", "🍑"},
-                {"Nước suối", "Chai 500ml", "Nước", "20000", "💧"},
-                {"Khoai tây chiên", "Phần vừa, kèm sốt", "Đồ ăn nhẹ", "45000", "🍟"},
-                {"Hotdog", "Xúc xích Đức kẹp bánh mì", "Đồ ăn nhẹ", "49000", "🌭"}
+                {"Coca-Cola", "Ly 22oz", "Nước", "35000", "🥤"}
         };
         for (String[] fd : foods) {
             ContentValues cv = new ContentValues();
@@ -184,7 +203,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     // ---------------- Users ----------------
-
     private static String hash(String s) {
         try {
             byte[] d = MessageDigest.getInstance("SHA-256").digest(s.getBytes("UTF-8"));
@@ -196,7 +214,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    /** @return id user mới, -1 nếu tên đăng nhập đã tồn tại */
     public long registerUser(String username, String password, String fullname, String phone) {
         ContentValues cv = new ContentValues();
         cv.put("username", username);
@@ -206,7 +223,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return getWritableDatabase().insert("Users", null, cv);
     }
 
-    /** @return id user, -1 nếu sai thông tin */
     public long login(String username, String password) {
         try (Cursor c = getReadableDatabase().rawQuery(
                 "SELECT id FROM Users WHERE username = ? AND password = ?",
@@ -222,7 +238,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    // ---------------- Movies / Showtimes / Food ----------------
+    // ---------------- Movies / Cinemas / Showtimes / Food ----------------
 
     public List<Movie> getMovies() {
         List<Movie> list = new ArrayList<>();
@@ -241,11 +257,45 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    public List<Showtime> getShowtimes(long movieId) {
+    public List<Cinema> getCinemas() {
+        List<Cinema> list = new ArrayList<>();
+        try (Cursor c = getReadableDatabase().rawQuery(
+                "SELECT id, brand, name, address, location FROM Cinemas ORDER BY id", null)) {
+            while (c.moveToNext()) {
+                Cinema cinema = new Cinema();
+                cinema.id = c.getLong(0);
+                cinema.brand = c.getString(1);
+                cinema.name = c.getString(2);
+                cinema.address = c.getString(3);
+                cinema.location = c.getString(4);
+                list.add(cinema);
+            }
+        }
+        return list;
+    }
+
+    public Cinema getCinema(long id) {
+        try (Cursor c = getReadableDatabase().rawQuery(
+                "SELECT id, brand, name, address, location FROM Cinemas WHERE id = ?",
+                new String[]{String.valueOf(id)})) {
+            if (c.moveToFirst()) {
+                Cinema cinema = new Cinema();
+                cinema.id = c.getLong(0);
+                cinema.brand = c.getString(1);
+                cinema.name = c.getString(2);
+                cinema.address = c.getString(3);
+                cinema.location = c.getString(4);
+                return cinema;
+            }
+            return null;
+        }
+    }
+
+    public List<Showtime> getShowtimesForCinema(long cinemaId, String date) {
         List<Showtime> list = new ArrayList<>();
         try (Cursor c = getReadableDatabase().rawQuery(
-                "SELECT " + SHOW_COLS + "FROM Showtimes WHERE movie_id = ? " +
-                "ORDER BY show_date, show_time", new String[]{String.valueOf(movieId)})) {
+                "SELECT " + SHOW_COLS + "FROM Showtimes WHERE cinema_id = ? AND show_date = ? " +
+                "ORDER BY show_time", new String[]{String.valueOf(cinemaId), date})) {
             while (c.moveToNext()) list.add(toShowtime(c));
         }
         return list;
@@ -276,6 +326,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
+    public List<Showtime> getShowtimes(long movieId) {
+        List<Showtime> list = new ArrayList<>();
+        try (Cursor c = getReadableDatabase().rawQuery(
+                "SELECT " + SHOW_COLS + "FROM Showtimes WHERE movie_id = ? " +
+                "ORDER BY show_date, show_time", new String[]{String.valueOf(movieId)})) {
+            while (c.moveToNext()) list.add(toShowtime(c));
+        }
+        return list;
+    }
+
     // ---------------- Tickets ----------------
 
     public Set<String> getBookedSeats(long showtimeId) {
@@ -293,11 +353,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return seats;
     }
 
-    /**
-     * Lưu 1 lần đặt (vé + bắp nước) trong 1 transaction.
-     * foodIds/foodQty: danh sách đồ ăn đã chọn (có thể rỗng); giá lấy từ bảng FoodItems.
-     * @return id vé, -1 nếu có ghế vừa bị người khác đặt
-     */
     public long bookTickets(long userId, long showtimeId, List<String> seats, int seatTotal,
                             List<Long> foodIds, List<Integer> foodQty, String paymentMethod,
                             int remindDays, long remindAt) {
@@ -307,7 +362,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             Set<String> booked = getBookedSeats(db, showtimeId);
             for (String s : seats) if (booked.contains(s)) return -1;
 
-            // tính tiền đồ ăn từ DB
             int foodTotal = 0;
             int[] prices = new int[foodIds.size()];
             for (int i = 0; i < foodIds.size(); i++) {
@@ -367,7 +421,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return t;
     }
 
-    /** Các vé còn nhắc trong tương lai - dùng để đặt lại báo thức sau khi khởi động lại máy. */
     public List<Ticket> getPendingReminders(long now) {
         List<Ticket> list = new ArrayList<>();
         try (Cursor c = getReadableDatabase().rawQuery(
@@ -423,11 +476,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Showtime s = new Showtime();
         s.id = c.getLong(0);
         s.movieId = c.getLong(1);
-        s.showDate = c.getString(2);
-        s.showTime = c.getString(3);
-        s.price = c.getInt(4);
-        s.room = c.getString(5);
-        s.format = c.getString(6);
+        s.cinemaId = c.getLong(2);
+        s.showDate = c.getString(3);
+        s.showTime = c.getString(4);
+        s.price = c.getInt(5);
+        s.room = c.getString(6);
+        s.format = c.getString(7);
+        s.totalSeats = c.getInt(8);
         return s;
     }
 
@@ -460,6 +515,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         t.format = c.getString(13);
         t.foodTotal = c.getInt(14);
         t.paymentMethod = c.getString(15);
+        t.cinemaName = c.getString(16);
         t.foodSummary = "";
         return t;
     }
