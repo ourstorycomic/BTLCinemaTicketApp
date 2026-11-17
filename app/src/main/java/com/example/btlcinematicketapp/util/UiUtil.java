@@ -44,7 +44,6 @@ public class UiUtil {
         if (b.contains("lotte")) return R.drawable.lotte;
         if (b.contains("galaxy")) return R.drawable.galaxy;
         if (b.contains("beta")) return R.drawable.beta;
-        if (b.contains("bhd")) return R.drawable.bhd_star;
         return R.drawable.cgv;
     }
 

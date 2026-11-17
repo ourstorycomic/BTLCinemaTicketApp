@@ -40,6 +40,13 @@ public class MyTicketsActivity extends AppCompatActivity {
         UiUtil.applyInsets(findViewById(R.id.root));
 
         findViewById(R.id.ivBack).setOnClickListener(v -> finish());
+        
+        findViewById(R.id.ivHome).setOnClickListener(v -> {
+            Intent intent = new Intent(MyTicketsActivity.this, HomeActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            finish();
+        });
 
         db = new DatabaseHelper(this);
         tvEmpty = findViewById(R.id.tvEmpty);

@@ -27,7 +27,7 @@ import java.util.Set;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "CinemaBooking.db";
-    private static final int DATABASE_VERSION = 9;
+    private static final int DATABASE_VERSION = 10;
 
     private static final String MOVIE_COLS =
             "id, title, description, poster_url, duration, genre, director, cast_list, " +
