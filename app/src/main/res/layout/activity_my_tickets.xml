@@ -22,15 +22,25 @@
             android:layout_height="28dp"
             android:layout_marginEnd="12dp"
             android:src="@drawable/ic_arrow_back"
+            android:contentDescription="Quay lại"
             app:tint="@color/black" />
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:text="Vé của tôi"
             android:textColor="@color/text_main"
             android:textSize="22sp"
             android:textStyle="bold" />
+
+        <ImageView
+            android:id="@+id/ivHome"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:src="@drawable/ic_nav_movie"
+            android:contentDescription="Trang chủ"
+            app:tint="@color/black" />
     </LinearLayout>
 
     <TextView
