@@ -38,14 +38,10 @@ public class UiUtil {
     }
 
     public static int getCinemaLogoRes(Context ctx, String brand) {
-        if (brand == null) return R.drawable.cgv;
+        if (brand == null) return R.drawable.ic_cinecinema;
         String b = brand.toLowerCase(java.util.Locale.ROOT);
-        if (b.contains("cgv")) return R.drawable.cgv;
-        if (b.contains("lotte")) return R.drawable.lotte;
-        if (b.contains("galaxy")) return R.drawable.galaxy;
-        if (b.contains("beta")) return R.drawable.beta;
-        if (b.contains("bhd")) return R.drawable.bhd_star;
-        return R.drawable.cgv;
+        if (b.contains("tất cả") || b.contains("all")) return R.drawable.ic_cinecinema_all;
+        return R.drawable.ic_cinecinema;
     }
 
     public static int dp(Context ctx, int v) {

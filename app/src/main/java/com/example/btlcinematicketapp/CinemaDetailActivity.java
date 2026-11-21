@@ -54,7 +54,7 @@ public class CinemaDetailActivity extends AppCompatActivity {
             ((TextView) findViewById(R.id.tvBrandTag)).setText(cinema.brand != null ? cinema.brand : "Cine");
             ((TextView) findViewById(R.id.tvCinemaFullTitle)).setText(cinema.name);
             ((TextView) findViewById(R.id.tvCinemaAddress)).setText("📍 Địa chỉ: " + (cinema.address != null ? cinema.address : "Đang cập nhật"));
-            ((TextView) findViewById(R.id.tvCinemaPhone)).setText("📞 Hotline: " + (cinema.phone != null ? cinema.phone : "1900 6017"));
+            ((TextView) findViewById(R.id.tvCinemaPhone)).setText("📞 Hotline: " + (cinema.phone != null ? cinema.phone : "1900 2026"));
             ((TextView) findViewById(R.id.tvCinemaHours)).setText("⏰ " + (cinema.operatingHours != null ? cinema.operatingHours : "08:00 - 23:30"));
             ((TextView) findViewById(R.id.tvCinemaFacilities)).setText("✨ Tiện ích: " + (cinema.facilities != null ? cinema.facilities : "Standard 2D/3D, Parking"));
         }

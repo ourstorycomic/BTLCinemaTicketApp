@@ -27,7 +27,7 @@ import java.util.Set;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "CinemaBooking.db";
-    private static final int DATABASE_VERSION = 9;
+    private static final int DATABASE_VERSION = 12;
 
     private static final String MOVIE_COLS =
             "id, title, description, poster_url, duration, genre, director, cast_list, " +
@@ -127,13 +127,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         // --- CINEMAS ---
         String[][] cinemas = {
-                {"CGV", "CGV Aeon Bình Tân", "Tầng 3, TTTM Aeon Mall Bình Tân, 1 Đường số 17A, P. Bình Trị Đông B", "Quận Bình Tân, TP. Hồ Chí Minh", "1900 6017", "4DX, IMAX, Dolby Atmos, Sweetbox, Parking", "08:00 - 23:30", "4.8"},
-                {"CGV", "CGV Crescent Mall", "Tầng 5, Crescent Mall, 101 Tôn Dật Tiên, P. Tân Phú", "Quận 7, TP. Hồ Chí Minh", "1900 6017", "IMAX, Gold Class, Sweetbox, Parking", "08:00 - 23:30", "4.9"},
-                {"CGV", "CGV Vincom Bà Triệu", "Tầng 6, Vincom Center, 191 Bà Triệu, Q. Hai Bà Trưng", "Quận Hai Bà Trưng, Hà Nội", "1900 6017", "IMAX, 4DX, Premium Lounge, Parking", "08:30 - 23:30", "4.8"},
-                {"Lotte", "Lotte Cinema Gò Vấp", "Tầng 3, Lotte Mart, 242 Nguyễn Văn Lượng, P. 10", "Quận Gò Vấp, TP. Hồ Chí Minh", "028 3620 2020", "Super Plex, Dolby Atmos, Parking", "08:00 - 23:00", "4.6"},
-                {"Galaxy", "Galaxy Nguyễn Du", "116 Nguyễn Du, P. Bến Thành", "Quận 1, TP. Hồ Chí Minh", "1900 2224", "Dolby Atmos, Food Court, Parking", "08:00 - 23:30", "4.7"},
-                {"Beta", "Beta Cinemas Quang Trung", "645 Quang Trung, P. 11", "Quận Gò Vấp, TP. Hồ Chí Minh", "0934 632 682", "Standard 2D/3D, Student Discount, Parking", "08:00 - 23:00", "4.5"},
-                {"BHD", "BHD Star Bitexco", "Tầng 3 & 4, TTTM Icon 68, 2 Hải Triều", "Quận 1, TP. Hồ Chí Minh", "1900 2099", "3D, First Class Lounge, Parking", "08:30 - 23:30", "4.6"}
+                {"CineCinema 1", "CineCinema 1 - Hai Bà Trưng", "Tầng 6, Tháp Trung Tâm, 191 Bà Triệu, Q. Hai Bà Trưng", "Quận Hai Bà Trưng, Hà Nội", "1900 2026", "IMAX Laser, 4DX, Sweetbox, Parking", "08:30 - 23:30", "4.8"},
+                {"CineCinema 2", "CineCinema 2 - Cầu Giấy", "Tầng 3, Cine Plaza Cầu Giấy, 122 Cầu Giấy, Q. Cầu Giấy", "Quận Cầu Giấy, Hà Nội", "1900 2026", "Super Plex, Dolby Atmos, Parking", "08:00 - 23:00", "4.7"},
+                {"CineCinema 3", "CineCinema 3 - Quận 1", "Tầng 4, Diamond Plaza, 34 Lê Duẩn, P. Bến Nghé", "Quận 1, TP. Hồ Chí Minh", "1900 2026", "Gold Class, Dolby Atmos, VIP Lounge", "08:00 - 23:30", "4.9"},
+                {"CineCinema 4", "CineCinema 4 - Bình Tân", "Tầng 3, TTTM Bình Tân, 1 Đường số 17A, P. Bình Trị Đông B", "Quận Bình Tân, TP. Hồ Chí Minh", "1900 2026", "IMAX, 4DX, Dolby Atmos, Sweetbox", "08:00 - 23:30", "4.8"},
+                {"CineCinema 5", "CineCinema 5 - Gò Vấp", "Tầng 2, Cine Center, 242 Nguyễn Văn Lượng, P. 10", "Quận Gò Vấp, TP. Hồ Chí Minh", "1900 2026", "Standard 2D/3D, Student Discount, Parking", "08:00 - 23:00", "4.6"},
+                {"CineCinema 6", "CineCinema 6 - Hải Châu", "Tầng 4, Danang Cine Center, 155 Nguyễn Văn Linh, P. Nam Dương", "Quận Hải Châu, Đà Nẵng", "1900 2026", "IMAX, Dolby Atmos, Sweetbox, Parking", "08:30 - 23:30", "4.8"},
+                {"CineCinema 7", "CineCinema 7 - Ninh Kiều", "Tầng 3, Tây Đô Cine Center, 209 Đường 30/4, P. Xuân Khánh", "Quận Ninh Kiều, Cần Thơ", "1900 2026", "Standard 2D/3D, Dolby Atmos, Parking", "08:00 - 23:00", "4.7"}
         };
         List<Long> cinemaIds = new ArrayList<>();
         for (String[] c : cinemas) {
@@ -152,17 +152,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         // --- MOVIES ---
         String[][] movies = {
                 {"Biệt Đội Săn Ma", "Nhóm bạn trẻ mở dịch vụ trừ tà và vướng vào một vụ án bí ẩn trong căn biệt thự bỏ hoang.",
-                        "112", "Kinh dị, Hài", "Nguyễn Hải Phong", "Lan Anh, Quốc Việt, Thu Hà", "T13", "Tiếng Việt", "2026-10-24", "7.4"},
+                        "112", "Kinh dị, Hài", "Nguyễn Hải Phong", "Lan Anh, Quốc Việt, Thu Hà", "T13", "Tiếng Việt", "2026-11-15", "7.4"},
                 {"Tình Yêu Mùa Thu", "Chuyện tình lặng lẽ giữa hai người xa lạ gặp nhau ở Hà Nội vào cuối thu.",
-                        "98", "Tình cảm", "Trần Minh Khuê", "Bảo Ngọc, Hoàng Nam", "T16", "Tiếng Việt", "2026-10-31", "8.1"},
+                        "98", "Tình cảm", "Trần Minh Khuê", "Bảo Ngọc, Hoàng Nam", "T16", "Tiếng Việt", "2026-11-25", "8.1"},
                 {"Hành Trình Vũ Trụ", "Phi hành đoàn lên đường tìm kiếm một hành tinh mới để cứu nhân loại.",
-                        "135", "Khoa học viễn tưởng", "Daniel Hart", "Ethan Cole, Mira Sol", "T13", "Phụ đề tiếng Việt", "2026-11-07", "8.6"},
+                        "135", "Khoa học viễn tưởng", "Daniel Hart", "Ethan Cole, Mira Sol", "T13", "Phụ đề tiếng Việt", "2026-12-05", "8.6"},
                 {"Thám Tử Hà Nội", "Vị thám tử già điều tra chuỗi vụ mất tích bí ẩn trong khu phố cổ.",
-                        "104", "Trinh thám", "Lê Quang Huy", "Đức Thịnh, Mai Phương", "T16", "Tiếng Việt", "2026-11-01", "7.9"},
+                        "104", "Trinh thám", "Lê Quang Huy", "Đức Thịnh, Mai Phương", "T16", "Tiếng Việt", "2026-12-15", "7.9"},
                 {"Rừng Xanh Phiêu Lưu", "Chú gấu nhỏ cùng những người bạn rừng xanh bảo vệ ngôi nhà của mình.",
-                        "92", "Hoạt hình, Gia đình", "Sofia Marin", "Lồng tiếng: Hà My, Tuấn Anh", "P", "Lồng tiếng Việt", "2026-10-20", "8.3"},
+                        "92", "Hoạt hình, Gia đình", "Sofia Marin", "Lồng tiếng: Hà My, Tuấn Anh", "P", "Lồng tiếng Việt", "2026-12-20", "8.3"},
                 {"Cuộc Đua Sinh Tử", "Tay đua cũ buộc phải quay lại đường đua bất hợp pháp để cứu em trai.",
-                        "118", "Hành động", "Marcus Reed", "Jake Turner, Linh Đan", "T18", "Phụ đề tiếng Việt", "2026-11-05", "7.6"}
+                        "118", "Hành động", "Marcus Reed", "Jake Turner, Linh Đan", "T18", "Phụ đề tiếng Việt", "2026-12-30", "7.6"}
         };
         String[] posters = {
                 "poster_biet_doi", "poster_tinh_yeu", "poster_vu_tru",
@@ -191,7 +191,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             long movieId = db.insert("Movies", null, mv);
 
             for (long cinemaId : cinemaIds) {
-                for (int d = 0; d <= 6; d++) {
+                for (int d = 0; d <= 60; d++) {
                     Calendar c = Calendar.getInstance();
                     c.add(Calendar.DAY_OF_YEAR, d);
                     String date = f.format(c.getTime());
@@ -435,6 +435,56 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
+    public long addCinema(String brand, String name, String address, String location, String phone, String facilities, String operatingHours, double rating) {
+        ContentValues cv = new ContentValues();
+        cv.put("brand", brand);
+        cv.put("name", name);
+        cv.put("address", address);
+        cv.put("location", location);
+        cv.put("phone", phone);
+        cv.put("facilities", facilities);
+        cv.put("operating_hours", operatingHours);
+        cv.put("rating", rating);
+        long id = getWritableDatabase().insert("Cinemas", null, cv);
+        if (id > 0) {
+            generateShowtimesForCinema(id);
+        }
+        return id;
+    }
+
+    public void generateShowtimesForCinema(long cinemaId) {
+        SQLiteDatabase db = getWritableDatabase();
+        List<Movie> movies = getMovies();
+        String[] times = {"17:40", "19:00", "20:00", "21:30", "22:30", "23:25"};
+        int[] prices = {90000, 110000, 110000, 110000, 90000, 90000};
+        String[] rooms = {"Phòng 1", "Phòng 2", "Phòng 3", "Phòng 1", "Phòng 2", "Phòng 3"};
+        SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+
+        int idx = 0;
+        for (Movie m : movies) {
+            idx++;
+            for (int d = 0; d <= 60; d++) {
+                Calendar c = Calendar.getInstance();
+                c.add(Calendar.DAY_OF_YEAR, d);
+                String date = f.format(c.getTime());
+
+                int showCount = (int) (Math.random() * 3) + 2;
+                for (int i = 0; i < showCount; i++) {
+                    ContentValues sv = new ContentValues();
+                    sv.put("movie_id", m.id);
+                    sv.put("cinema_id", cinemaId);
+                    sv.put("show_date", date);
+                    sv.put("show_time", times[(idx + i + d) % times.length]);
+                    sv.put("price", prices[i % prices.length]);
+                    sv.put("room", rooms[i % rooms.length]);
+                    sv.put("format", (idx == 3 || idx == 6) && i >= 1 ? "3D" : "2D");
+                    sv.put("total_seats", (int) (Math.random() * 100) + 100);
+                    db.insert("Showtimes", null, sv);
+                }
+            }
+        }
+    }
+
     public List<Review> getReviewsForMovie(long movieId) {
         List<Review> list = new ArrayList<>();
         try (Cursor c = getReadableDatabase().rawQuery(
@@ -525,7 +575,49 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "ORDER BY show_date, show_time", new String[]{String.valueOf(movieId)})) {
             while (c.moveToNext()) list.add(toShowtime(c));
         }
+
+        if (list.isEmpty()) {
+            ensureShowtimesExist(getWritableDatabase(), movieId);
+            try (Cursor c = getReadableDatabase().rawQuery(
+                    "SELECT " + SHOW_COLS + "FROM Showtimes WHERE movie_id = ? " +
+                    "ORDER BY show_date, show_time", new String[]{String.valueOf(movieId)})) {
+                while (c.moveToNext()) list.add(toShowtime(c));
+            }
+        }
         return list;
+    }
+
+    public void ensureShowtimesExist(SQLiteDatabase db, long movieId) {
+        String[] times = {"09:30", "11:45", "14:15", "16:45", "19:15", "21:30", "23:00"};
+        int[] prices = {90000, 110000, 110000, 110000, 90000, 90000};
+        String[] rooms = {"Phòng 1", "Phòng 2", "Phòng 3", "Phòng 4"};
+        SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+
+        List<Long> cinemaIds = new ArrayList<>();
+        try (Cursor c = db.rawQuery("SELECT id FROM Cinemas", null)) {
+            while (c.moveToNext()) cinemaIds.add(c.getLong(0));
+        }
+
+        for (long cinemaId : cinemaIds) {
+            for (int d = 0; d <= 60; d++) {
+                Calendar c = Calendar.getInstance();
+                c.add(Calendar.DAY_OF_YEAR, d);
+                String date = f.format(c.getTime());
+
+                for (int i = 0; i < 4; i++) {
+                    ContentValues sv = new ContentValues();
+                    sv.put("movie_id", movieId);
+                    sv.put("cinema_id", cinemaId);
+                    sv.put("show_date", date);
+                    sv.put("show_time", times[(int) ((movieId + i + d) % times.length)]);
+                    sv.put("price", prices[i % prices.length]);
+                    sv.put("room", rooms[i % rooms.length]);
+                    sv.put("format", i % 2 == 0 ? "2D" : "3D");
+                    sv.put("total_seats", 120);
+                    db.insert("Showtimes", null, sv);
+                }
+            }
+        }
     }
 
     // ---------------- Tickets ----------------

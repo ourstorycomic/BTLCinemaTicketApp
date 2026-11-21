@@ -223,7 +223,7 @@ public class ProfileFragment extends Fragment {
     private void showSupportDialog() {
         new AlertDialog.Builder(requireContext())
                 .setTitle("Trung Tâm Hỗ Trợ Khách Hàng")
-                .setMessage("Hotline CineBox: 1900 6017 (08:00 - 22:00 hàng ngày)\n\n" +
+                .setMessage("Hotline CineBox: 1900 2026 (08:00 - 22:00 hàng ngày)\n\n" +
                         "Email hỗ trợ: support@cinebox.vn\n\n" +
                         "Địa chỉ trụ sở: Tầng 6, TTTM Icon 68, 2 Hải Triều, Quận 1, TP. Hồ Chí Minh")
                 .setPositiveButton("Đóng", null)

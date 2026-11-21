@@ -7,7 +7,9 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,11 +32,14 @@ import java.util.List;
 
 public class CinemaFragment extends Fragment {
     private List<Cinema> allCinemas;
+    private List<String> brands = new ArrayList<>();
     private CinemaAdapter cinemaAdapter;
+    private BrandAdapter brandAdapter;
     private RecyclerView rvCinemas;
     private TextView tvCinemaCount, tvLocationFilter;
-    private String selectedBrand = "CGV";
+    private String selectedBrand = "Tất cả";
     private String selectedCity = "TP.HCM";
+    private DatabaseHelper db;
 
     @Nullable
     @Override
@@ -49,7 +54,7 @@ public class CinemaFragment extends Fragment {
             rvCinemas.setLayoutManager(new LinearLayoutManager(getContext()));
         }
 
-        DatabaseHelper db = new DatabaseHelper(requireContext());
+        db = new DatabaseHelper(requireContext());
         allCinemas = db.getCinemas();
 
         // City Location Filter
@@ -57,21 +62,19 @@ public class CinemaFragment extends Fragment {
             tvLocationFilter.setOnClickListener(v -> showCityPicker());
         }
 
-        // Setup Brand RecyclerView (Dynamic from DB)
-        List<String> brands = db.getBrands();
-        if (brands.isEmpty()) {
-            brands.add("CGV");
-            brands.add("Lotte");
-            brands.add("Galaxy");
-            brands.add("Beta");
-            brands.add("BHD");
+        // Button Tạo rạp riêng
+        View btnCreateCinema = view.findViewById(R.id.btnCreateCinema);
+        if (btnCreateCinema != null) {
+            btnCreateCinema.setOnClickListener(v -> showAddCinemaDialog());
         }
-        selectedBrand = brands.get(0);
+
+        // Setup Brand RecyclerView (Dynamic from DB)
+        loadBrands();
 
         RecyclerView rvBrands = view.findViewById(R.id.rvBrands);
         if (rvBrands != null) {
             rvBrands.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
-            BrandAdapter brandAdapter = new BrandAdapter(brands, brand -> {
+            brandAdapter = new BrandAdapter(brands, brand -> {
                 selectedBrand = brand;
                 filterCinemas();
             });
@@ -96,6 +99,79 @@ public class CinemaFragment extends Fragment {
         return view;
     }
 
+    private void loadBrands() {
+        brands.clear();
+        brands.add("Tất cả");
+        List<String> dbBrands = db.getBrands();
+        if (dbBrands.isEmpty()) {
+            brands.add("CineCinema 1");
+            brands.add("CineCinema 2");
+            brands.add("CineCinema 3");
+            brands.add("CineCinema 4");
+            brands.add("CineCinema 5");
+            brands.add("CineCinema 6");
+            brands.add("CineCinema 7");
+        } else {
+            for (String b : dbBrands) {
+                if (!b.equalsIgnoreCase("Tất cả") && !brands.contains(b)) {
+                    brands.add(b);
+                }
+            }
+        }
+        selectedBrand = brands.get(0);
+    }
+
+    private void showAddCinemaDialog() {
+        View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_add_cinema, null);
+        EditText etCinemaName = dialogView.findViewById(R.id.etCinemaName);
+        Spinner spCity = dialogView.findViewById(R.id.spCity);
+        EditText etAddress = dialogView.findViewById(R.id.etAddress);
+        EditText etPhone = dialogView.findViewById(R.id.etPhone);
+        EditText etFacilities = dialogView.findViewById(R.id.etFacilities);
+        EditText etOperatingHours = dialogView.findViewById(R.id.etOperatingHours);
+
+        String[] cities = {"TP. Hồ Chí Minh", "Hà Nội", "Đà Nẵng", "Cần Thơ", "Hải Phòng"};
+        ArrayAdapter<String> cityAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_dropdown_item, cities);
+        spCity.setAdapter(cityAdapter);
+
+        new AlertDialog.Builder(requireContext())
+                .setTitle("Tạo Rạp Chiếu Phim Mới")
+                .setView(dialogView)
+                .setPositiveButton("Tạo rạp", (dialog, which) -> {
+                    String name = etCinemaName.getText().toString().trim();
+                    if (name.isEmpty()) {
+                        Toast.makeText(getContext(), "Vui lòng nhập tên rạp!", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    String city = (String) spCity.getSelectedItem();
+                    String address = etAddress.getText().toString().trim();
+                    if (address.isEmpty()) address = "Đang cập nhật địa chỉ";
+                    String phone = etPhone.getText().toString().trim();
+                    if (phone.isEmpty()) phone = "1900 2026";
+                    String facilities = etFacilities.getText().toString().trim();
+                    if (facilities.isEmpty()) facilities = "Standard 2D/3D, Dolby Atmos, Parking";
+                    String hours = etOperatingHours.getText().toString().trim();
+                    if (hours.isEmpty()) hours = "08:00 - 23:30";
+
+                    // Extract or determine brand
+                    String brand = name.contains("-") ? name.split("-")[0].trim() : name;
+
+                    long newId = db.addCinema(brand, name, address, city, phone, facilities, hours, 4.8);
+                    if (newId > 0) {
+                        Toast.makeText(getContext(), "Tạo rạp \"" + name + "\" thành công!", Toast.LENGTH_LONG).show();
+                        allCinemas = db.getCinemas();
+                        loadBrands();
+                        if (brandAdapter != null) brandAdapter.notifyDataSetChanged();
+                        filterCinemas();
+                    } else {
+                        Toast.makeText(getContext(), "Thêm rạp thất bại, vui lòng thử lại!", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .setNegativeButton("Hủy", null)
+                .show();
+    }
+
     private void showCityPicker() {
         String[] cities = {"TP.HCM", "Hà Nội", "Đà Nẵng", "Cần Thơ", "Hải Phòng"};
         new AlertDialog.Builder(requireContext())
@@ -112,12 +188,18 @@ public class CinemaFragment extends Fragment {
     private void filterCinemas() {
         List<Cinema> filteredList = new ArrayList<>();
         for (Cinema c : allCinemas) {
-            if (c.brand != null && c.brand.equalsIgnoreCase(selectedBrand)) {
+            boolean matchesBrand = selectedBrand.equalsIgnoreCase("Tất cả")
+                    || (c.brand != null && c.brand.equalsIgnoreCase(selectedBrand))
+                    || (c.name != null && c.name.toLowerCase().contains(selectedBrand.toLowerCase()));
+
+            if (matchesBrand) {
                 if (selectedCity.equals("TP.HCM") && c.location != null && c.location.contains("TP. Hồ Chí Minh")) {
                     filteredList.add(c);
                 } else if (c.location != null && c.location.contains(selectedCity)) {
                     filteredList.add(c);
-                } else if (allCinemas.indexOf(c) < 3) {
+                } else if (selectedBrand.equalsIgnoreCase("Tất cả") && allCinemas.indexOf(c) < 3) {
+                    filteredList.add(c);
+                } else if (!selectedBrand.equalsIgnoreCase("Tất cả")) {
                     filteredList.add(c);
                 }
             }
@@ -125,7 +207,10 @@ public class CinemaFragment extends Fragment {
 
         if (filteredList.isEmpty()) {
             for (Cinema c : allCinemas) {
-                if (c.brand != null && c.brand.equalsIgnoreCase(selectedBrand)) {
+                boolean matchesBrand = selectedBrand.equalsIgnoreCase("Tất cả")
+                        || (c.brand != null && c.brand.equalsIgnoreCase(selectedBrand))
+                        || (c.name != null && c.name.toLowerCase().contains(selectedBrand.toLowerCase()));
+                if (matchesBrand) {
                     filteredList.add(c);
                 }
             }

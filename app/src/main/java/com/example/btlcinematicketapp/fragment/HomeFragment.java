@@ -183,7 +183,7 @@ public class HomeFragment extends Fragment {
     private void showHelpModal() {
         new AlertDialog.Builder(requireContext())
                 .setTitle("Trung Tâm Hỗ Trợ Khách Hàng")
-                .setMessage("Hotline CineBox: 1900 6017 (08:00 - 22:00 hàng ngày)\n\n" +
+                .setMessage("Hotline CineBox: 1900 2026 (08:00 - 22:00 hàng ngày)\n\n" +
                         "Email hỗ trợ: support@cinebox.vn\n\n" +
                         "Nếu gặp sự cố thanh toán hoặc nhận vé, vui lòng liên hệ hotline để được hỗ trợ nhanh chóng.")
                 .setPositiveButton("Đóng", null)

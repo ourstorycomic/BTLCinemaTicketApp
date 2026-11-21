@@ -25,7 +25,7 @@
                 android:layout_height="36dp"
                 android:layout_alignParentStart="true"
                 android:layout_centerVertical="true"
-                android:src="@drawable/cgv" />
+                android:src="@drawable/ic_cinecinema" />
 
             <TextView
                 android:id="@+id/tvMovieTitle"
@@ -67,7 +67,7 @@
             android:id="@+id/tvCinemaInfo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Rạp: CGV Aeon Bình Tân • Phòng 1"
+            android:text="Rạp: CineCinema 1 - Hai Bà Trưng • Phòng 1"
             android:textColor="@color/text_main"
             android:textSize="14sp"
             android:textStyle="bold" />

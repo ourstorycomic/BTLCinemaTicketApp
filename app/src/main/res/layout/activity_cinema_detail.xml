@@ -64,7 +64,7 @@
                     android:background="@drawable/bg_btn_book"
                     android:paddingHorizontal="8dp"
                     android:paddingVertical="3dp"
-                    android:text="CGV"
+                    android:text="CineCinema"
                     android:textColor="@color/white"
                     android:textSize="12sp"
                     android:textStyle="bold" />
@@ -74,7 +74,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:text="CGV Aeon Bình Tân"
+                    android:text="CineCinema 1 - Hai Bà Trưng"
                     android:textColor="@color/text_main"
                     android:textSize="17sp"
                     android:textStyle="bold" />
@@ -85,7 +85,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
-                android:text="📍 Địa chỉ: Tầng 3, TTTM Aeon Mall Bình Tân"
+                android:text="📍 Địa chỉ: 191 Bà Triệu, Q. Hai Bà Trưng, Hà Nội"
                 android:textColor="@color/text_sub"
                 android:textSize="13sp" />
 

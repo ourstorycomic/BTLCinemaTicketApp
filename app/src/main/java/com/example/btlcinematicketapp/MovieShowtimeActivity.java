@@ -70,7 +70,7 @@ public class MovieShowtimeActivity extends AppCompatActivity {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
         SimpleDateFormat sdfDisplay = new SimpleDateFormat("dd/MM", Locale.US);
 
-        for (int i = 0; i < 7; i++) {
+        for (int i = 0; i < 45; i++) {
             Calendar c = Calendar.getInstance();
             c.add(Calendar.DAY_OF_YEAR, i);
             rawDates.add(sdf.format(c.getTime()));
@@ -110,9 +110,8 @@ public class MovieShowtimeActivity extends AppCompatActivity {
 
     private boolean hasShowtimesForDate(String date) {
         List<Showtime> allShowtimesForMovie = db.getShowtimes(movie.id);
-        long now = System.currentTimeMillis();
         for (Showtime st : allShowtimesForMovie) {
-            if (date.equals(st.showDate) && TimeUtil.showMillis(st.showDate, st.showTime) > now) {
+            if (date.equals(st.showDate)) {
                 return true;
             }
         }
@@ -123,9 +122,8 @@ public class MovieShowtimeActivity extends AppCompatActivity {
         List<Showtime> allShowtimesForMovie = db.getShowtimes(movie.id);
         List<Showtime> dayShowtimes = new ArrayList<>();
 
-        long now = System.currentTimeMillis();
         for (Showtime st : allShowtimesForMovie) {
-            if (date.equals(st.showDate) && TimeUtil.showMillis(st.showDate, st.showTime) > now) {
+            if (date.equals(st.showDate)) {
                 dayShowtimes.add(st);
             }
         }
